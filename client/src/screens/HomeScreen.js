@@ -17,7 +17,7 @@ export default function HomeScreen({ navigation, route }) {
                             <Avatar isCreateStoryButton={true} image={user.avatar} size={20} />
                         </TouchableOpacity>
 
-                        <ScrollView horizontal={true}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="w-full flex-row gap-5">
                                 {users.map((user) => (
                                     <View key={user._id}>
@@ -34,7 +34,7 @@ export default function HomeScreen({ navigation, route }) {
                             <Text className="color-main">View more</Text>
                         </View>
 
-                        <ScrollView horizontal={true}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="flex-row gap-6">
                                 {videos.map((video) => (
                                     <View key={video._id}>
@@ -43,6 +43,7 @@ export default function HomeScreen({ navigation, route }) {
                                             title={video.title}
                                             views={video.views}
                                             user={video.user}
+                                            isTrending={true}
                                         />
                                     </View>
                                 ))}
@@ -52,7 +53,7 @@ export default function HomeScreen({ navigation, route }) {
 
                     <View className="mt-6 gap-6">
                         <Text className="font-bold color-slate-800 text-xl">Browser topics</Text>
-                        <View className="gap-4 flex-row items-center flex-wrap">
+                        <View className="gap-4 flex-row items-center flex-wrap justify-center">
                             {topics.map((topic, index) => (
                                 <TouchableOpacity key={index}>
                                     <TopicCard topic={topic} />
@@ -68,7 +69,7 @@ export default function HomeScreen({ navigation, route }) {
                             <Text className="color-main">View more</Text>
                         </View>
 
-                        <ScrollView horizontal={true}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="flex-row gap-6">
                                 {streamingVideos.map((video) => (
                                     <View key={video._id}>
@@ -92,7 +93,7 @@ export default function HomeScreen({ navigation, route }) {
                             <Text className="color-main">View more</Text>
                         </View>
 
-                        <ScrollView horizontal={true}>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="flex-row gap-4">
                                 {audioList.map((audio) => (
                                     <View key={audio._id}>
