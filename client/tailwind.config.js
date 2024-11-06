@@ -11,6 +11,9 @@ module.exports = {
             backgroundColor: {
                 main: "#F44B87",
                 "#f0f6ff": "#f0f6ff"
+            },
+            width: {
+                "3/10": "32%"
             }
         }
     },

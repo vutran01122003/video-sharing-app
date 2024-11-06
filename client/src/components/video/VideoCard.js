@@ -48,14 +48,18 @@ function VideoCard({
                             {views && (
                                 <View className="flex-row gap-1 items-center">
                                     <Feather name="play" size={12} color="white" />
-                                    <Text className={`color-white text-sm`}>{`${millify(views)}`}</Text>
+                                    <Text className={`color-white text-sm`}>
+                                        {`${millify(views)} ${!isSearching ? "Views" : ""}`}
+                                    </Text>
                                 </View>
                             )}
 
                             {likes && (
                                 <View className="flex-row gap-1 items-center">
                                     <Feather name="heart" size={12} color="white" />
-                                    <Text className={`color-white text-sm`}>{`${millify(likes)}`}</Text>
+                                    <Text className={`color-white text-sm`}>
+                                        {`${millify(likes)} ${!isSearching ? "Likes" : ""}`}
+                                    </Text>
                                 </View>
                             )}
                         </View>

@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import tabs from "./tabs";
+import { tabs } from "./tabs";
 
 export const screenOptions = ({ route }) => {
     let iconName = tabs.find((tab) => tab.name === route.name).icon;

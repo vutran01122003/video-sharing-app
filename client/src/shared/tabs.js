@@ -2,8 +2,10 @@ import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CreateVideoScreen from "../screens/CreateVideoScreen";
 import SearchScreen from "../screens/SearchScreen";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Feather } from "@expo/vector-icons";
 
-const tabs = [
+export const tabs = [
     {
         name: "Home",
         icon: "home",
@@ -30,5 +32,3 @@ const tabs = [
         component: ProfileScreen
     }
 ];
-
-export default tabs;
