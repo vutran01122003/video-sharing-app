@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import tabs from "./src/shared/tabs";
+import Profile from "./src/components/Profile/Profile";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,5 +43,6 @@ export default function App() {
                 ))}
             </Tab.Navigator>
         </NavigationContainer>
+         
     );
 }
