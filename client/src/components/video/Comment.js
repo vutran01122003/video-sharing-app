@@ -1,7 +1,7 @@
 import { View } from "react-native";
 
-function CommentItem() {
+function Comment() {
     return <View>Comment Item</View>;
 }
 
-export default CommentItem;
+export default Comment;

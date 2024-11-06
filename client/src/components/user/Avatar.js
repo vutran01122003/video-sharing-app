@@ -1,12 +1,14 @@
 import { View, Text, Image, SafeAreaView } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
-export default function Avatar({ image, username, isStory, isCreateStoryButton, size }) {
+export default function Avatar({ image, username, isStory, isCreateStoryButton, width, height, isHorizontal }) {
     return (
-        <SafeAreaView className="flex-col gap-2 items-center">
-            <View className="relative">
+        <View className={`gap-2 items-center ${isHorizontal ? "flex-row" : "flex-col"}`}>
+            <View className={`relative ${width ? width : "w-16"} ${height ? height : "h-16"}`}>
                 <Image
-                    className={`w-${size} h-${size} rounded-full border-4 ${isStory ? "border-blue-400" : null}`}
+                    className={`w-full h-full rounded-full ${
+                        isStory ? "border-2 border-blue-400" : "border border-gray-200"
+                    }`}
                     source={{
                         uri: image
                     }}
@@ -15,16 +17,17 @@ export default function Avatar({ image, username, isStory, isCreateStoryButton, 
 
                 {(isCreateStoryButton || isStory) && (
                     <View
-                        className={`absolute -bottom-1 -right-1 h-8 w-8 ${
-                            isCreateStoryButton ? "bg-main" : "bg-blue-500"
-                        } rounded-full justify-center items-center`}
+                        className={`absolute -bottom-1 -right-1 h-8 w-8 rounded-full justify-center items-center 
+                            ${isCreateStoryButton ? "bg-main" : "bg-blue-500"}`}
                     >
                         <Feather name={isCreateStoryButton ? "plus" : "video"} size={14} color="white" />
                     </View>
                 )}
             </View>
 
-            {(isCreateStoryButton || username) && <Text>{isCreateStoryButton ? "You" : username}</Text>}
-        </SafeAreaView>
+            {(isCreateStoryButton || username) && (
+                <Text className="color-gray-500">{isCreateStoryButton ? "You" : username}</Text>
+            )}
+        </View>
     );
 }

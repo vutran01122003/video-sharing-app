@@ -3,7 +3,7 @@ import Feather from "@expo/vector-icons/Feather";
 
 function TopicCard({ topic, isExpandTopic }) {
     return (
-        <SafeAreaView className="h-20 w-20 bg-gray-100 justify-center p-1 items-center gap-2">
+        <SafeAreaView className="h-20 w-20 bg-gray-100/70 justify-center p-1 items-center gap-2">
             {isExpandTopic ? (
                 <Text className="font-bold text-xl color-yellow-300">+20</Text>
             ) : (

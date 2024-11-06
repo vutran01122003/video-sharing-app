@@ -134,7 +134,7 @@ export const streamingVideos = [
         _id: "streaming_video_04",
         title: "Playing",
         thumbnail: "https://images.pexels.com/photos/14470152/pexels-photo-14470152.jpeg",
-        views: 900,
+        views: 1900,
         createdAt: "2024-11-05 02:20:00",
         user: {
             _id: "9022",
@@ -170,3 +170,120 @@ export const audioList = [
         thumbnail: "https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg"
     }
 ];
+
+export const searchingData = [
+    {
+        _id: "searching_video_01",
+        title: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+        thumbnail: "https://images.pexels.com/photos/13929964/pexels-photo-13929964.jpeg",
+        views: 1200000,
+        likes: 12500,
+        type: "trending",
+        createdAt: "2024-11-05 04:35:00",
+        user: {
+            _id: "0923",
+            username: "user0923",
+            avatar: "https://images.pexels.com/photos/1726771/pexels-photo-1726771.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_02",
+        title: "But also the leap into electronic typesetting, remaining essentially unchanged",
+        thumbnail: "https://images.pexels.com/photos/6593590/pexels-photo-6593590.jpeg",
+        views: 1000000,
+        likes: 12400,
+        type: "trending",
+        createdAt: "2024-11-05 04:29:00",
+        user: {
+            _id: "1235",
+            username: "user1235",
+            avatar: "https://images.pexels.com/photos/2531546/pexels-photo-2531546.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_03",
+        title: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece",
+        thumbnail: "https://images.pexels.com/photos/8254899/pexels-photo-8254899.jpeg",
+        views: 1050000,
+        likes: 24300,
+        type: "trending",
+        createdAt: "2024-11-05 01:16:00",
+        user: {
+            _id: "1092",
+            username: "user1092",
+            avatar: "https://images.pexels.com/photos/1726771/pexels-photo-1726771.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_04",
+        title: "The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested",
+        thumbnail: "https://images.pexels.com/photos/14470152/pexels-photo-14470152.jpeg",
+        views: 19000,
+        likes: 1200,
+        type: "trending",
+        createdAt: "2024-11-05 02:20:00",
+        user: {
+            _id: "9022",
+            username: "user9022",
+            avatar: "https://images.pexels.com/photos/2531546/pexels-photo-2531546.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_101",
+        title: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+        thumbnail: "https://images.pexels.com/photos/13929964/pexels-photo-13929964.jpeg",
+        views: 1200000,
+        likes: 12500,
+        type: "Streaming",
+        createdAt: "2024-11-05 04:35:00",
+        user: {
+            _id: "0923",
+            username: "user0923",
+            avatar: "https://images.pexels.com/photos/1726771/pexels-photo-1726771.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_102",
+        title: "But also the leap into electronic typesetting, remaining essentially unchanged",
+        thumbnail: "https://images.pexels.com/photos/6593590/pexels-photo-6593590.jpeg",
+        views: 1000000,
+        likes: 12400,
+        type: "Streaming",
+        createdAt: "2024-11-05 04:29:00",
+        user: {
+            _id: "1235",
+            username: "user1235",
+            avatar: "https://images.pexels.com/photos/2531546/pexels-photo-2531546.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_103",
+        title: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece",
+        thumbnail: "https://images.pexels.com/photos/8254899/pexels-photo-8254899.jpeg",
+        views: 1050000,
+        likes: 24300,
+        type: "Streaming",
+        createdAt: "2024-11-05 01:16:00",
+        user: {
+            _id: "1092",
+            username: "user1092",
+            avatar: "https://images.pexels.com/photos/1726771/pexels-photo-1726771.jpeg"
+        }
+    },
+    {
+        _id: "searching_video_104",
+        title: "The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested",
+        thumbnail: "https://images.pexels.com/photos/14470152/pexels-photo-14470152.jpeg",
+        views: 19000,
+        likes: 1200,
+        type: "Streaming",
+        createdAt: "2024-11-05 02:20:00",
+        user: {
+            _id: "9022",
+            username: "user9022",
+            avatar: "https://images.pexels.com/photos/2531546/pexels-photo-2531546.jpeg"
+        }
+    }
+];
+
+export const suggestionData = ["Funny momments of pet", "Cats", "Dogs", "Foods for pet", "Vet center"];

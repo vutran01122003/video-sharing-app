@@ -1,7 +1,7 @@
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CreateVideoScreen from "../screens/CreateVideoScreen";
-import SearchVideoScreen from "../screens/SearchVideoScreen";
+import SearchScreen from "../screens/SearchScreen";
 
 const tabs = [
     {
@@ -12,7 +12,7 @@ const tabs = [
     {
         name: "Search",
         icon: "search",
-        component: SearchVideoScreen
+        component: SearchScreen
     },
     {
         name: "Create",
