@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { screenOptions } from "./src/shared/screen";
 import { tabs } from "./src/shared/tabs";
 import AudioVideo from "./src/components/video/AudioVideo";
+import FollowScreen from "./src/screens/FollowScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +17,6 @@ export default function App() {
         //         ))}
         //     </Tab.Navigator>
         // </NavigationContainer>
-        <AudioVideo videoUri="https://videostream.sirv.com/video/cktg.mp4"/>
+        <FollowScreen/>
     );
 }
