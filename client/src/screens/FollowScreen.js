@@ -113,9 +113,8 @@ export default function FollowScreen({ navigation, route }) {
                             renderItem={renderItemFollowers}
                             keyExtractor={item => item._id}
                         />
-                    </View>
-
-                )}
+                    </View>               
+)}
                 {activeTab === "followers" && (
                     <FlatList
                         data={users}
