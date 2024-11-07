@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { tabs } from "./tabs";
+import { privateTabs, tabs } from "./tabs";
 
 export const screenOptions = ({ route }) => {
     let iconName = tabs.find((tab) => tab.name === route.name).icon;
@@ -9,6 +9,9 @@ export const screenOptions = ({ route }) => {
         tabBarIcon: ({ color, size }) => <Feather name={iconName} size={size} color={color} />,
         tabBarInactiveTintColor: "grey",
         tabBarActiveTintColor: "#F44B87",
+        tabBarItemStyle: {
+            display: privateTabs[route.name] ? "none" : "block"
+        },
         tabBarLabelStyle: {
             paddingBottom: 4,
             fontSize: 10

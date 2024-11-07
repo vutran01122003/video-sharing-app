@@ -2,8 +2,15 @@ import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import CreateVideoScreen from "../screens/CreateVideoScreen";
 import SearchScreen from "../screens/SearchScreen";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Feather } from "@expo/vector-icons";
+import UploadVideoScreen from "../screens/UploadVideoScreen";
+
+export const privateTabs = {
+    Upload: {
+        name: "Upload",
+        icon: "plus",
+        component: UploadVideoScreen
+    }
+};
 
 export const tabs = [
     {
@@ -27,8 +34,9 @@ export const tabs = [
         component: ProfileScreen
     },
     {
-        name: "My profile",
+        name: "Profile",
         icon: "user",
         component: ProfileScreen
-    }
+    },
+    ...Object.values(privateTabs)
 ];

@@ -23,6 +23,22 @@
         "web": {
             "favicon": "./assets/favicon.png",
             "bundler": "metro"
-        }
+        },
+        "plugins": [
+            [
+                "expo-camera",
+                {
+                    "cameraPermission": "Allow V-Sharing app to access your camera",
+                    "microphonePermission": "Allow V-Sharing app to access your microphone",
+                    "recordAudioAndroid": true
+                }
+            ],
+            [
+                "expo-av",
+                {
+                    "microphonePermission": "Allow V-Sharing app to access your microphone."
+                }
+            ]
+        ]
     }
 }
