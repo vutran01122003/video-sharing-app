@@ -15,6 +15,9 @@ module.exports = {
             width: {
                 "3/10": "32%"
                 
+            },
+            borderWidth:{
+                "1":"1px"
             }
         }
     },
