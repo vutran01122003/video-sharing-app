@@ -14,6 +14,7 @@ module.exports = {
             },
             width: {
                 "3/10": "32%"
+                
             }
         }
     },
