@@ -17,12 +17,12 @@ const imgMapping = {
     '../../assets/Create Video - Select Music/Image 52.png': require('../../assets/Create Video - Select Music/Image 52.png'),
     '../../assets/Create Video - Select Music/Image 53.png': require('../../assets/Create Video - Select Music/Image 53.png'),
 }
-export default function AddAudioModal({isModalShow}) {
-    const [isModalVisible, setModalVisible] = useState(false);
+export default function AddAudioModal({isModalShow, setIsModalShow}) {
     const [activeTab, setActiveTab] = useState('For you');
     const [showSearch, setShowSearch] = useState(false);
+   
     const renderAudioItem = ({ item }) => (
-
+        
         <View className="flex-row items-center justify-between p-4 border-b border-gray-200 focus:bg-pink-300">
             <View className="flex-row items-center">
                 <Image source={imgMapping[item.image]} className="w-10 h-10 rounded-lg mr-4" />
@@ -43,19 +43,16 @@ export default function AddAudioModal({isModalShow}) {
             </View>
         </View>
 
-    );
+);
 
-    return (
-        <View className="flex-1 justify-center items-center">
-            <TouchableOpacity onPress={() => setModalVisible(true)} className="bg-black p-4 rounded-full">
-                <Text className="text-black">Open Add Audio Modal</Text>
-            </TouchableOpacity>
-
+return (
+        
+             
             <Modal
                 animationType="slide"
                 transparent={true}
-                visible={isModalVisible}
-                onRequestClose={() => setModalVisible(false)}
+                visible={isModalShow}
+                onRequestClose={() => setIsModalShow(!isModalShow)}
             >
                 <View className="flex-1 justify-end">
                     <View className="h-1/2 bg-white rounded-t-3xl p-4">
@@ -65,7 +62,7 @@ export default function AddAudioModal({isModalShow}) {
                                 <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
                                     <Feather name="search" size={24} color="gray" />
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                <TouchableOpacity onPress={() => setIsModalShow(false)}>
                                     <Feather name="x" size={24} color="gray" />
                                 </TouchableOpacity>
                             </View>
@@ -112,6 +109,5 @@ export default function AddAudioModal({isModalShow}) {
                     </View>
                 </View>
             </Modal>
-        </View>
     );
 }
