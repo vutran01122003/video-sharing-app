@@ -3,11 +3,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { screenOptions } from "./src/shared/screen";
 import { privateTabs, tabs } from "./src/shared/tabs";
-import { tabs } from "./src/shared/tabs";
+// import { tabs } from "./src/shared/tabs";
 import AudioVideo from "./src/components/video/AudioVideo";
 import FollowScreen from "./src/screens/FollowScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import SignUp from "./src/screens/SignUpScreen";
+import AddAudioModal from "./src/screens/ModalScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,5 +21,6 @@ export default function App() {
                 ))}
             </Tab.Navigator>
         </NavigationContainer>
+        
     );
 }
