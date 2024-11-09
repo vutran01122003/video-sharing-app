@@ -7,6 +7,7 @@ import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icon
 import { ratio, timeLimit, videoQuality } from "../shared/video";
 import CircleProgressBar from "../components/alert/CircleProgressBar";
 import ModalScreen from "./ModalScreen"
+import AnimatedAudioButton from "../components/custom/AnimatedAudioButton";
 export default function CreateVideoScreen({ navigation, route }) {
     const cameraRef = useRef();
     const [permission, requestPermission] = useCameraPermissions();
@@ -16,7 +17,7 @@ export default function CreateVideoScreen({ navigation, route }) {
     const [cameraFlash, setCameraFlash] = useState(false);
     const [isAudioModal, setIsAudioModal] = useState(false);
     const [hasAudioPermission, setHasAudioPermission] = useState(null);
-
+    const [nameAudio, setNameAudio] = useState('Add audio')
     const onGoHome = () => {
         navigation.navigate("Home");
     };
@@ -96,14 +97,8 @@ export default function CreateVideoScreen({ navigation, route }) {
                             <Ionicons name="close" size={24} color="white" />
                         </TouchableOpacity>
 
-                        <View className="flex-1 items-center">
-                            <TouchableOpacity onPress={()=>setIsAudioModal(true)}>
-                                <View className="flex-row bg-white w-32 gap-1 py-2 rounded-3xl justify-center items-center">
-                                    <MaterialCommunityIcons name="music-note-plus" size={19} color="#525f7f" />
-                                    <Text className="color-gray-600 font-semibold">Add audio</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
+                     
+                        <AnimatedAudioButton nameAudio={nameAudio} setIsAudioModal={setIsAudioModal} />
                     </View>
 
                     <View className="w-12 absolute right-2 top-24 gap-8">
@@ -172,7 +167,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                     </View>
                 </View>
             </CameraView>
-            <ModalScreen isModalShow={isAudioModal} setIsModalShow={setIsAudioModal} className="z-50" />
+            <ModalScreen isModalShow={isAudioModal} setIsModalShow={setIsAudioModal} setNameAudio={setNameAudio} className="z-50" />
         </SafeAreaView>
     );
 }
