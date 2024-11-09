@@ -7,7 +7,7 @@ import UploadVideoScreen from "../screens/UploadVideoScreen";
 export const privateTabs = {
     Upload: {
         name: "Upload",
-        icon: "plus",
+        icon: "upload",
         component: UploadVideoScreen
     }
 };

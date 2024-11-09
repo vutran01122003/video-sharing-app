@@ -41,7 +41,7 @@ function VideoCard({
                     />
                 )}
 
-                <View className="absolute bottom-0 left-0 flex-row justify-between items-center px-2 pb-2 pt-1 bg-stone-800/45 ">
+                <View className="absolute bottom-0 left-0 flex-row justify-between items-center px-2 pb-2 pt-1 bg-stone-600/80">
                     <View className="flex-1">
                         {(isStreaming || isTrending) && <Text className="font-bold color-white text-lg">{title}</Text>}
                         <View className="w-full flex-row items-center justify-between">

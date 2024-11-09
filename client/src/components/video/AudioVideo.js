@@ -3,7 +3,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
 import { View, TouchableOpacity, PanResponder, Animated, SafeAreaView } from "react-native";
 
-export default function AudioVideo({ videoUri, width, height }) {
+export default function AudioVideo({ videoUri, width, height, isPreview }) {
     const videoRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -47,7 +47,7 @@ export default function AudioVideo({ videoUri, width, height }) {
     return (
         <SafeAreaView>
             <Animated.View
-                className={`mt-11 ${width ?? "w-full"} ${height ?? "h-full"}`}
+                className={`${width ?? "w-full"} ${height ?? "h-full"}`}
                 style={{
                     transform: [{ translateY: scrollY }]
                 }}
@@ -72,7 +72,6 @@ export default function AudioVideo({ videoUri, width, height }) {
                     }}
                 />
 
-                {/* Overlay Controls */}
                 <View className="absolute inset-0 justify-between w-full items-center flex-row bottom-1 p-4">
                     <TouchableOpacity className="p-2.5 rounded-full bg-black/50" onPress={togglePlayPause}>
                         <MaterialIcons name={isPlaying ? "pause" : "play-arrow"} size={50} color="white" />
@@ -86,20 +85,21 @@ export default function AudioVideo({ videoUri, width, height }) {
                     </TouchableOpacity>
                 </View>
 
-                {/* Side Action Buttons */}
-                <View className="absolute right-2.5 bottom-1/3 items-center gap-5">
-                    <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
-                        <MaterialIcons name="favorite" size={35} color="white" />
-                    </TouchableOpacity>
+                {!isPreview && (
+                    <View className="absolute right-2.5 bottom-1/3 items-center gap-5">
+                        <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
+                            <MaterialIcons name="favorite" size={35} color="white" />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
-                        <MaterialIcons name="chat" size={35} color="white" />
-                    </TouchableOpacity>
+                        <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
+                            <MaterialIcons name="chat" size={35} color="white" />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
-                        <MaterialIcons name="share" size={35} color="white" />
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
+                            <MaterialIcons name="share" size={35} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                )}
             </Animated.View>
         </SafeAreaView>
     );
