@@ -2,13 +2,14 @@ import { Video } from "expo-av";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
 import { View, TouchableOpacity, PanResponder, Animated, SafeAreaView } from "react-native";
-
+import CommentsModal from "../modal/ModalComment";
 export default function AudioVideo({ videoUri, width, height, isPreview }) {
     const videoRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
 
     const [isPlaying, setIsPlaying] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const panResponder = PanResponder.create({
         onStartShouldSetPanResponder: () => true,
@@ -91,7 +92,7 @@ export default function AudioVideo({ videoUri, width, height, isPreview }) {
                             <MaterialIcons name="favorite" size={35} color="white" />
                         </TouchableOpacity>
 
-                        <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
+                        <TouchableOpacity onPress={()=>setModalVisible(true)}>
                             <MaterialIcons name="chat" size={35} color="white" />
                         </TouchableOpacity>
 
@@ -101,6 +102,11 @@ export default function AudioVideo({ videoUri, width, height, isPreview }) {
                     </View>
                 )}
             </Animated.View>
+            <CommentsModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                className="z-40"
+            />
         </SafeAreaView>
     );
 }
