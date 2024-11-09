@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { TouchableOpacity } from "react-native";
 import { SafeAreaView, Text, View } from "react-native";
-import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ratio, timeLimit, videoQuality } from "../shared/video";
 import CircleProgressBar from "../components/alert/CircleProgressBar";
 
@@ -14,8 +14,11 @@ export default function CreateVideoScreen({ navigation, route }) {
     const [facing, setFacing] = useState("back");
     const [isRecord, setIsRecord] = useState(false);
     const [cameraFlash, setCameraFlash] = useState(false);
-
     const [hasAudioPermission, setHasAudioPermission] = useState(null);
+    const [sound, setSound] = useState(null);
+    const [audioStartTime, setAudioStartTime] = useState(null);
+    const [audioEndTime, setAudioEndTime] = useState(null);
+    const [isMute, setIsMute] = useState(false);
 
     const onGoHome = () => {
         navigation.navigate("Home");
@@ -24,8 +27,21 @@ export default function CreateVideoScreen({ navigation, route }) {
     const onRecordVideo = async () => {
         try {
             if (cameraRef.current && permission.granted && hasAudioPermission) {
+                // setAudioStartTime(0);
+                // setAudioEndTime(null);
+
+                // const { sound: newSound } = await Audio.Sound.createAsync(require("../../assets/CDYT.mp3"), {
+                //     shouldPlay: true
+                // });
+
+                // setSound(newSound);
+
+                // await newSound.setPositionAsync(120 * 1000);
+                // await newSound.playAsync();
+
                 setIsRecord(true);
-                const video = await cameraRef.current.recordAsync({ maxDuration: timeLimit * 1000 });
+
+                const video = await cameraRef.current.recordAsync({ maxDuration: (timeLimit + 10) * 1000 });
                 navigation.navigate("Upload", { videoUri: video.uri });
             }
         } catch (error) {
@@ -38,6 +54,18 @@ export default function CreateVideoScreen({ navigation, route }) {
             await cameraRef.current.stopRecording();
             setTime(0);
             setIsRecord(false);
+
+            // if (sound) {
+            //     // const status = await sound.getStatusAsync();
+            //     // const currentPosition = Math.floor(status.positionMillis / 1000);
+            //     // setAudioEndTime(currentPosition);
+
+            //     await sound.stopAsync();
+            //     await sound.unloadAsync();
+            //     setSound(null);
+
+            //     console.log(`Stop! Nhạc đã phát từ giây ${audioStartTime} đến giây ${currentPosition}`);
+            // }
         }
     };
 
@@ -49,14 +77,18 @@ export default function CreateVideoScreen({ navigation, route }) {
         setCameraFlash((prev) => !prev);
     };
 
+    const onToggleMic = () => {
+        setIsMute((prev) => !prev);
+    };
+
     useEffect(() => {
         let timer = null;
         if (isRecord) {
             timer = setInterval(() => {
                 setTime((prev) => {
-                    if (prev === 60) {
+                    if (prev === timeLimit) {
                         clearInterval(timer);
-                        setIsRecord(false);
+                        onStopRecordVideo();
                         return 0;
                     }
                     return prev + 0.5;
@@ -78,6 +110,14 @@ export default function CreateVideoScreen({ navigation, route }) {
         }
     }, []);
 
+    useEffect(() => {
+        return () => {
+            if (sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, [sound]);
+
     if (!permission) return <View />;
 
     return (
@@ -87,6 +127,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                 ref={cameraRef}
                 facing={facing}
                 ratio={ratio}
+                mute={isMute}
                 videoQuality={videoQuality}
                 enableTorch={cameraFlash}
             >
@@ -136,6 +177,13 @@ export default function CreateVideoScreen({ navigation, route }) {
                                     color="white"
                                 />
                                 <Text className="color-white">Flash</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={onToggleMic}>
+                            <View className="gap-1 items-center">
+                                <Feather name={isMute ? "mic-off" : "mic"} size={28} color="white" />
+                                <Text className="color-white">Mic</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
