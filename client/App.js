@@ -1,36 +1,26 @@
 import "./global.css";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { screenOptions } from "./src/shared/screen";
-import { tabs } from "./src/shared/tabs";
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, TextInput, FlatList, Modal, SafeAreaView } from 'react-native';
-import CommentsModal from "./src/components/modal/ModalComment";
-const Tab = createBottomTabNavigator();
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useState } from "react";
+import LoginScreen from "./src/screens/LoginScreen"
+import SignUp from "./src/screens/SignUpScreen";
+import TabNavigator from "./src/screens/MainApp";
+const Stack = createNativeStackNavigator();
 
-export default function App() {
-    // Trong component cha
-    const [modalVisible, setModalVisible] = useState(false);
+export default function App() { 
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     return (
-        // <NavigationContainer>
-        //     <Tab.Navigator initialRouteName={tabs[5].name} screenOptions={screenOptions}>
-        //         {tabs.map((tab) => (
-        //             <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
-        //         ))}
-        //     </Tab.Navigator>
-        // </NavigationContainer>
-        <View className='bg-black flex-1'>
-
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <Text className="mt-20 text-white">Open Comments</Text>
-            </TouchableOpacity>
-
-
-            <CommentsModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                className="z-40"
-            />
-        </View>
+        <NavigationContainer>
+            <Stack.Navigator screenOptions={{headerShown:false}}>
+                { !isAuthenticated ? (
+                   <>
+                         <Stack.Screen name="Login" component={LoginScreen} />
+                         <Stack.Screen name="SignUp" component={SignUp} />
+                   </>
+                ):(
+                        <Stack.Screen name="MainApp" component={TabNavigator} />
+                )}
+            </Stack.Navigator>
+        </NavigationContainer>
     );
 }

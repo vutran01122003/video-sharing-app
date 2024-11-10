@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
     flex: 1,
+    marginTop: 44
   },
   backContainer: {
     position: 'absolute',

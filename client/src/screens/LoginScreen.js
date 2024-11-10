@@ -70,6 +70,12 @@ const LoginScreen = ({ navigation }) => {
                     </View>
                     {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
                 </View>
+                <View className="flex-row gap-2 justify-end mt-5">
+                    <Text>Do you have an account ?</Text>
+                    <TouchableOpacity onPress={()=> navigation.navigate("SignUp")} >
+                            <Text style={{ color: '#F44B87', fontWeight: 'bold', textDecorationLine:'underline' }}>SignUp</Text>
+                    </TouchableOpacity>
+                </View>
                 <View style={{ flex: 1, justifyContent: 'center' }}>
                     <TouchableOpacity style={styles.button} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Login</Text>
