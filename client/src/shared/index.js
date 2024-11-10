@@ -41,6 +41,7 @@ export const videos = [
         _id: "video01",
         title: "Lovely",
         thumbnail: "https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg",
+        url:"https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/qcpxblupqulaloljlpms",
         views: 1500000,
         user: {
             _id: "092",
@@ -52,6 +53,7 @@ export const videos = [
         _id: "video02",
         title: "Sweet",
         thumbnail: "https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg",
+        url:"https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/igmspt7y3a6xpet4vkbe",
         views: 1200000,
         user: {
             _id: "912",

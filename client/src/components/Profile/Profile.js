@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Text, View, SafeAreaView, Image, TouchableOpacity, FlatList, Dimensions } from "react-native";
+import { Text, View, SafeAreaView, Image, TouchableOpacity, FlatList, Dimensions, Pressable } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { videos } from "../../shared";
 import VideoCard from "../video/VideoCard";
 import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 export default function Profile() {
     const [activeTab, setActiveTab] = useState("videos");
+    const navigation = useNavigation();
     const tabs = [
         {
             id: "videos",
@@ -26,8 +28,13 @@ export default function Profile() {
         }
     ];
 
-    const renderItem = ({ item }) => (
-        <VideoCard image={item.thumbnail} views={item.views} width="w-3/10" imageHeight={"h-44"} />
+    const renderItem = ({ item, index }) => (
+        <TouchableOpacity
+        onPress={() => navigation.navigate("VideoAudio",{videos: videos, initialIndex: index})}
+        style={{ width: "32%"}}
+    >
+        <VideoCard image={item.thumbnail} views={item.views} width="w-full" imageHeight={"h-44"} />
+        </TouchableOpacity>
     );
 
     return (
@@ -88,7 +95,8 @@ export default function Profile() {
                     ))}
                 </View>
 
-                <View className="items-center w-full">
+                <View className="items-center w-full relative">
+                   
                     {activeTab === "videos" && (
                         <FlatList
                             numColumns={3}
