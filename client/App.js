@@ -8,7 +8,7 @@ import TabNavigator from "./src/screens/MainApp";
 const Stack = createNativeStackNavigator();
 
 export default function App() { 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown:false}}>
