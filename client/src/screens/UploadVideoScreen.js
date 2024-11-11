@@ -3,10 +3,15 @@ import { AntDesign, FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@
 import { SafeAreaView, Text, TextInput, TouchableOpacity, View, Switch, ScrollView, Modal } from "react-native";
 import { watchModeList } from "../shared/video";
 import AudioVideo from "../components/video/AudioVideo";
+import { Video } from "expo-av";
 
 export default function UploadVideoScreen({ navigation, route }) {
     const videoUri = route.params?.videoUri;
 
+    const videoRef = useRef(null);
+ 
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
     const [hashtagValue, setHashtagValue] = useState("");
     const [hashtagList, setHashtagList] = useState([]);
     const [watchModeIndex, setWatchModeIndex] = useState(0);
@@ -80,6 +85,24 @@ export default function UploadVideoScreen({ navigation, route }) {
         }
     };
 
+    const togglePlayPause = async () => {
+        if (videoRef.current) {
+            if (isPlaying) {
+                await videoRef.current.pauseAsync();
+            } else {
+                await videoRef.current.playAsync();
+            }
+            setIsPlaying(!isPlaying);
+        }
+    };
+
+    const toggleMute = async () => {
+        if (videoRef.current) {
+            await videoRef.current.setIsMutedAsync(!isMuted);
+            setIsMuted(!isMuted);
+        }
+    };
+
     return (
         <SafeAreaView>
             <ScrollView>
@@ -93,7 +116,35 @@ export default function UploadVideoScreen({ navigation, route }) {
                         </TouchableOpacity>
                     </View>
 
-                    <AudioVideo videoUri={videoUri} width={"w-44"} height={"h-80"} isPreview={true} />
+                    <View className="w-44 h-80 relative">
+                        <View className="absolute inset-0 justify-between w-full items-center flex-row bottom-1 p-4 z-10">
+                            <TouchableOpacity  onPress={togglePlayPause}>
+                                <MaterialIcons name={isPlaying ? "pause" : "play-arrow"} size={30} color="white" />
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={toggleMute}
+                            >
+                                <MaterialIcons name={isMuted ? "volume-off" : "volume-up"} size={30} color="white" />
+                            </TouchableOpacity>
+                        </View>
+                        <Video
+                            isLooping
+                            ref={videoRef}
+                            shouldPlay={isPlaying}
+                            isMuted={isMuted}
+                            resizeMode="cover"
+                            source={{ uri: videoUri }}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                            }}
+                            onError={(error) => {
+                                console.log("Video Error:", error);
+                            }}
+                        />
+                    </View>
+                    {/* <AudioVideo videoUri={videoUri} width={"w-44"} height={"h-80"} isPreview={true} /> */}
 
                     <View className="w-full p-5 gap-4 items-start">
                         <View className="gap-2 w-full">
@@ -273,8 +324,9 @@ export default function UploadVideoScreen({ navigation, route }) {
 
                     <View className="flex-row gap-4 items-center justify-center p-4">
                         <TouchableOpacity onPress={onUploadVideo}>
-                            <View className="bg-main px-4 py-3 rounded-md items-center justify-center flex-row w-40">
-                                <Text className="color-white font-semibold">Save draft</Text>
+                            <View className="px-4 py-3 rounded-md items-center justify-center flex-row w-40 gap-2 border border-main">
+                                <AntDesign name="download" size={18} color="#F44B87" />
+                                <Text className="color-main font-semibold">Save draft</Text>
                             </View>
                         </TouchableOpacity>
 

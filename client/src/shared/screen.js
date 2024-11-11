@@ -9,9 +9,9 @@ export const screenOptions = ({ route }) => {
         tabBarIcon: ({ color, size }) => <Feather name={iconName} size={size} color={color} />,
         tabBarInactiveTintColor: "grey",
         tabBarActiveTintColor: "#F44B87",
-        // tabBarItemStyle: {
-        //     display: privateTabs[route.name] ? "none" : "block"
-        // },
+        tabBarItemStyle: {
+            display: privateTabs[route.name] ? "none" : "block"
+        },
         tabBarLabelStyle: {
             paddingBottom: 4,
             fontSize: 10

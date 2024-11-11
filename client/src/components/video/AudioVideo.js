@@ -5,7 +5,7 @@ import { View, TouchableOpacity, PanResponder, Animated, SafeAreaView, Dimension
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import CommentsModal from "../modal/ModalComment";
 
-export default function AudioVideo({ video,videoUri, width, height, isPreview, initialIndex = 0 }) {
+export default function AudioVideo({  videoUri, width, height, isPreview, initialIndex=0}) {
     const videoRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
     const [isPlaying, setIsPlaying] = useState(true);
@@ -17,6 +17,7 @@ export default function AudioVideo({ video,videoUri, width, height, isPreview, i
     const [isSwipeEnabled, setIsSwipeEnabled] = useState(true);
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const isFocus = useIsFocused();
+    
     // Thêm một timer để tránh việc swipe liên tục
     const swipeThrottleTimeout = useRef(null);
     const { width: screenWidth, height: screenHeight } = Dimensions.get('window');

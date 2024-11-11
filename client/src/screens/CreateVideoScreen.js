@@ -15,7 +15,7 @@ export default function CreateVideoScreen({ navigation, route }) {
     const [facing, setFacing] = useState("back");
     const [isRecord, setIsRecord] = useState(false);
     const [cameraFlash, setCameraFlash] = useState(false);
-
+    const [isMute, setIsMute] = useState(false);    
     const [isAudioModal, setIsAudioModal] = useState(false);
     const [hasAudioPermission, setHasAudioPermission] = useState(null);
     const [nameAudio, setNameAudio] = useState('Add audio')
@@ -109,13 +109,13 @@ export default function CreateVideoScreen({ navigation, route }) {
         }
     }, []);
 
-    useEffect(() => {
-        return () => {
-            if (sound) {
-                sound.unloadAsync();
-            }
-        };
-    }, [sound]);
+    // useEffect(() => {
+    //     return () => {
+    //         if (sound) {
+    //             sound.unloadAsync();
+    //         }
+    //     };
+    // }, [sound]);
 
     if (!permission) return <View />;
 

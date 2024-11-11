@@ -22,14 +22,14 @@ export default function FollowScreen({ navigation, route }) {
     const RenderItemFollowing = ({ item }) => {
         return (
             <View className="mt-4 flex-row items-center justify-between p-4">
-                <View className=" flex-row justify-center items-center gap-2">
+                <View className=" flex-row justify-center items-center gap-4">
                     <Image source={{ uri: item.avatar }} style={{ resizeMode: 'cover', width: 50, height: 50, borderRadius: 100 }} />
-                    <Text className="text-lg">{item?.username}</Text>
+                    <Text className="text-lg font-bold color-gray-600">{item?.username}</Text>
                 </View>
                 <View className='flex-row items-center gap-2'>
                     <TouchableOpacity>
                         <View className="border-1 border-gray-400 w-32 h-12 rounded-md items-center justify-center">
-                            <Text className="text-gray-400">Following</Text>
+                            <Text className="text-gray-400 font-bold">Following</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
@@ -41,19 +41,19 @@ export default function FollowScreen({ navigation, route }) {
     }
     const renderItemFollowers = ({ item }) => {
         return (
-            <View className="mt-4 flex-row items-center justify-between p-4">
-                <View className=" flex-row justify-center items-center gap-2">
+            <View className="mt-4 flex-row items-center justify-between p-4 border-b border-gray-200">
+                <View className=" flex-row justify-center items-center gap-4">
                     <Image source={{ uri: item.avatar }} style={{ resizeMode: 'cover', width: 50, height: 50, borderRadius: 100 }} />
-                    <Text className="text-lg">{item?.username}</Text>
+                    <Text className="text-lg font-bold color-gray-600">{item?.username}</Text>
                 </View>
-                <View className='flex-row items-center gap-2'>
+                <View className='flex-row items-center gap-4'>
                     <TouchableOpacity>
-                        <View className="bg-blue-400 w-32 h-12 rounded-md items-center justify-center">
-                            <Text className="text-white">Follow</Text>
+                        <View className="bg-blue-500 w-32 h-12 rounded-md items-center justify-center">
+                            <Text className="text-white font-boldqr">Follow</Text>
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <Ionicons name="close" size={24} color="gray" />
+                        <Ionicons name="close" size={24} color="#F44B87" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -68,7 +68,7 @@ export default function FollowScreen({ navigation, route }) {
                     </TouchableOpacity>
                     <Image source={require('../../assets/My Profile/Container 71.png')} className="w-20 h-20" />
                     <View>
-                        <Text className="font-bold text-2xl text-gray-400">Ruth Sanders</Text>
+                        <Text className="font-bold text-2xl text-gray-600">Ruth Sanders</Text>
                     </View>
                 </View>
                 <View className="flex-row items-center gap-2">
@@ -80,7 +80,7 @@ export default function FollowScreen({ navigation, route }) {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View className="flex-1 mt-12 w-full">
+            <View className="flex-1 mt-6 w-full mb-8">
                 <View className="flex-row items-center justify-around w-full">
                     {tabs.map((tab) => (
                         <TouchableOpacity
