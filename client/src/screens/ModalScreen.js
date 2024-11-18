@@ -1,28 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, FlatList, Image, Modal, TextInput } from 'react-native';
-import { Feather } from '@expo/vector-icons'; // For icons
-import { Audio } from 'expo-av';
-import TimeSelectionComponent from '../components/custom/TimeSelectionComponent';
-
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, FlatList, Image, Modal, TextInput } from "react-native";
+import { Feather } from "@expo/vector-icons"; // For icons
+import { Audio } from "expo-av";
+import TimeSelectionComponent from "../components/custom/TimeSelectionComponent";
 
 const audioData = [
-    { id: '1', title: 'Hẹn gặp lại anh', duration: 43, image: '../../assets/Create Video - Select Music/Image 49.png', url: 'https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/HenGapLaiAnh' },
-    { id: '2', title: 'Nơi vực trời', duration: 58, image: '../../assets/Create Video - Select Music/Image 50.png', url: 'https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/NoiVucTroi' },
-    { id: '3', title: 'Là anh ngộ nhận', duration: 57, image: '../../assets/Create Video - Select Music/Image 51.png', url: 'https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/LaAnhNgoNhan' },
-    { id: '4', title: 'Flowers', duration: 30, image: '../../assets/Create Video - Select Music/Image 52.png' },
-    { id: '5', title: 'Morning coffee', duration: 30, image: '../../assets/Create Video - Select Music/Image 53.png' },
+    {
+        id: "1",
+        title: "Hẹn gặp lại anh",
+        duration: 43,
+        image: "../../assets/Create Video - Select Music/Image 49.png",
+        url: "https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/HenGapLaiAnh"
+    },
+    {
+        id: "2",
+        title: "Nơi vực trời",
+        duration: 58,
+        image: "../../assets/Create Video - Select Music/Image 50.png",
+        url: "https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/NoiVucTroi"
+    },
+    {
+        id: "3",
+        title: "Là anh ngộ nhận",
+        duration: 57,
+        image: "../../assets/Create Video - Select Music/Image 51.png",
+        url: "https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/LaAnhNgoNhan"
+    },
+    { id: "4", title: "Flowers", duration: 30, image: "../../assets/Create Video - Select Music/Image 52.png" },
+    { id: "5", title: "Morning coffee", duration: 30, image: "../../assets/Create Video - Select Music/Image 53.png" }
 ];
 
 const imgMapping = {
-    '../../assets/Create Video - Select Music/Image 49.png': require('../../assets/Create Video - Select Music/Image 49.png'),
-    '../../assets/Create Video - Select Music/Image 50.png': require('../../assets/Create Video - Select Music/Image 50.png'),
-    '../../assets/Create Video - Select Music/Image 51.png': require('../../assets/Create Video - Select Music/Image 51.png'),
-    '../../assets/Create Video - Select Music/Image 52.png': require('../../assets/Create Video - Select Music/Image 52.png'),
-    '../../assets/Create Video - Select Music/Image 53.png': require('../../assets/Create Video - Select Music/Image 53.png'),
-}
+    "../../assets/Create Video - Select Music/Image 49.png": require("../../assets/Create Video - Select Music/Image 49.png"),
+    "../../assets/Create Video - Select Music/Image 50.png": require("../../assets/Create Video - Select Music/Image 50.png"),
+    "../../assets/Create Video - Select Music/Image 51.png": require("../../assets/Create Video - Select Music/Image 51.png"),
+    "../../assets/Create Video - Select Music/Image 52.png": require("../../assets/Create Video - Select Music/Image 52.png"),
+    "../../assets/Create Video - Select Music/Image 53.png": require("../../assets/Create Video - Select Music/Image 53.png")
+};
 
 export default function AddAudioModal({ isModalShow, setIsModalShow, setNameAudio }) {
-    const [activeTab, setActiveTab] = useState('For you');
+    const [activeTab, setActiveTab] = useState("For you");
     const [showSearch, setShowSearch] = useState(false);
     const [sound, setSound] = useState(null);
     const [audioStartTime, setAudioStartTime] = useState(0);
@@ -49,7 +66,7 @@ export default function AddAudioModal({ isModalShow, setIsModalShow, setNameAudi
         setSelectedAudio(item);
         setShowTimeSelection(true);
     };
-    
+
     const handleTimeSelect = async (startTime, endTime) => {
         if (sound) {
             // Clear any existing timer
@@ -118,16 +135,13 @@ export default function AddAudioModal({ isModalShow, setIsModalShow, setNameAudi
             setAudioEndTime(null);
             setDuration(duration);
 
-            const { sound: newSound } = await Audio.Sound.createAsync(
-                { uri: url },
-                { shouldPlay: true }
-            );
+            const { sound: newSound } = await Audio.Sound.createAsync({ uri: url }, { shouldPlay: true });
             setSound(newSound);
             await newSound.playAsync();
         } catch (error) {
-            console.error('Error playing sound:', error);
+            console.error("Error playing sound:", error);
         }
-    }
+    };
 
     const stopMusic = async (nameAudio) => {
         try {
@@ -152,7 +166,7 @@ export default function AddAudioModal({ isModalShow, setIsModalShow, setNameAudi
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     return (
         <>
@@ -177,13 +191,18 @@ export default function AddAudioModal({ isModalShow, setIsModalShow, setNameAudi
                         </View>
 
                         <View className="flex-row mb-4 gap-3 justify-between w-full">
-                            {['For you', 'Trending', 'Saved'].map((tab) => (
-                                <TouchableOpacity
-                                    key={tab}
-                                    onPress={() => setActiveTab(tab)}
-                                >
-                                    <View className={`px-6 py-2 ${activeTab === tab ? 'bg-[#F44B87] rounded-full' : ""}`}>
-                                        <Text className={`font-medium ${activeTab === tab ? 'text-white' : 'text-[#F44B87]'}`}>{tab}</Text>
+                            {["For you", "Trending", "Saved"].map((tab) => (
+                                <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)}>
+                                    <View
+                                        className={`px-6 py-2 ${activeTab === tab ? "bg-[#F44B87] rounded-full" : ""}`}
+                                    >
+                                        <Text
+                                            className={`font-medium ${
+                                                activeTab === tab ? "text-white" : "text-[#F44B87]"
+                                            }`}
+                                        >
+                                            {tab}
+                                        </Text>
                                     </View>
                                 </TouchableOpacity>
                             ))}
@@ -192,20 +211,12 @@ export default function AddAudioModal({ isModalShow, setIsModalShow, setNameAudi
                         {showSearch && (
                             <View className="flex-row items-center bg-gray-200 px-4 py-2 rounded-lg mb-4">
                                 <Feather name="search" size={20} color="gray" />
-                                <TextInput
-                                    placeholder="Search"
-                                    className="ml-2 flex-1"
-                                    placeholderTextColor="gray"
-                                />
+                                <TextInput placeholder="Search" className="ml-2 flex-1" placeholderTextColor="gray" />
                             </View>
                         )}
 
-                        {activeTab === 'For you' && (
-                            <FlatList
-                                data={audioData}
-                                renderItem={renderAudioItem}
-                                keyExtractor={(item) => item.id}
-                            />
+                        {activeTab === "For you" && (
+                            <FlatList data={audioData} renderItem={renderAudioItem} keyExtractor={(item) => item.id} />
                         )}
                     </View>
                 </View>

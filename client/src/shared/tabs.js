@@ -4,17 +4,30 @@ import CreateVideoScreen from "../screens/CreateVideoScreen";
 import SearchScreen from "../screens/SearchScreen";
 import UploadVideoScreen from "../screens/UploadVideoScreen";
 import AudioVideo from "../components/video/AudioVideo";
-import FollowScreen from "../screens/FollowScreen"
+import FollowScreen from "../screens/FollowScreen";
+import LoginScreen from "../screens/LoginScreen";
+import SignUp from "../screens/SignUpScreen";
+
 export const privateTabs = {
+    Login: {
+        name: "Login",
+        icon: "",
+        component: LoginScreen
+    },
+    SignUp: {
+        name: "SignUp",
+        icon: "",
+        component: SignUp
+    },
     Upload: {
         name: "Upload",
         icon: "upload",
         component: UploadVideoScreen
     },
-    VideoAudio:{
+    VideoAudio: {
         name: "VideoAudio",
         icon: "video",
-        component:AudioVideo
+        component: AudioVideo
     }
 };
 

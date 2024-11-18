@@ -2,9 +2,11 @@ import express, { type Router, type Request, type Response, type NextFunction } 
 import userController from "../../controllers/user.controller";
 import { validateResource } from "../../middleware/validateResource";
 import { createUserSchema } from "../../schema/createUser.schema";
+import { loginUserSchema } from "../../schema/loginUser.schema";
 
 const router: Router = express.Router();
 
-router.post("/users", validateResource(createUserSchema), userController.createUser);
+router.post("/users/register", validateResource(createUserSchema), userController.createUser);
+router.post("/users/login", validateResource(loginUserSchema), userController.loginUser);
 
 export default router;

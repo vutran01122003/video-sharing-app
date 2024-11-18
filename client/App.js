@@ -1,26 +1,18 @@
 import "./global.css";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useState } from "react";
-import LoginScreen from "./src/screens/LoginScreen"
-import SignUp from "./src/screens/SignUpScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./src/screens/MainApp";
+import GlobalContextProvider from "./GlobalContext";
 const Stack = createNativeStackNavigator();
 
-export default function App() { 
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
+export default function App() {
     return (
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{headerShown:false}}>
-                { !isAuthenticated ? (
-                   <>
-                         <Stack.Screen name="Login" component={LoginScreen} />
-                         <Stack.Screen name="SignUp" component={SignUp} />
-                   </>
-                ):(
-                        <Stack.Screen name="MainApp" component={TabNavigator} />
-                )}
-            </Stack.Navigator>
-        </NavigationContainer>
+        <GlobalContextProvider>
+            <NavigationContainer>
+                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="MainApp" component={TabNavigator} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </GlobalContextProvider>
     );
 }

@@ -1,11 +1,23 @@
 @url=http://localhost:8000/api
 
-###
-POST {{url}}/users
+### Register User
+POST {{url}}/users/register
 Content-Type: application/json
 
 {
-    "user_name": "vutran120",
-    "email": "tranducvu120@gmai.com",
-    "password": "12345"
+    "user_name": "vutran43a",
+    "email": "tranducvu43a@gmai.com",
+    "password": "123456a",
+    "confirm": "123456a"
 }
+
+### Login User
+POST {{url}}/users/login
+Content-Type: application/json
+
+{
+    "user_name": "vutran43a",
+    "password": "123456a"
+}
+
+

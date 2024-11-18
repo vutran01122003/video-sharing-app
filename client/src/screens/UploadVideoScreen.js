@@ -9,7 +9,7 @@ export default function UploadVideoScreen({ navigation, route }) {
     const videoUri = route.params?.videoUri;
 
     const videoRef = useRef(null);
- 
+
     const [isPlaying, setIsPlaying] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
     const [hashtagValue, setHashtagValue] = useState("");
@@ -118,13 +118,11 @@ export default function UploadVideoScreen({ navigation, route }) {
 
                     <View className="w-44 h-80 relative">
                         <View className="absolute inset-0 justify-between w-full items-center flex-row bottom-1 p-4 z-10">
-                            <TouchableOpacity  onPress={togglePlayPause}>
+                            <TouchableOpacity onPress={togglePlayPause}>
                                 <MaterialIcons name={isPlaying ? "pause" : "play-arrow"} size={30} color="white" />
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                onPress={toggleMute}
-                            >
+                            <TouchableOpacity onPress={toggleMute}>
                                 <MaterialIcons name={isMuted ? "volume-off" : "volume-up"} size={30} color="white" />
                             </TouchableOpacity>
                         </View>
@@ -137,7 +135,7 @@ export default function UploadVideoScreen({ navigation, route }) {
                             source={{ uri: videoUri }}
                             style={{
                                 width: "100%",
-                                height: "100%",
+                                height: "100%"
                             }}
                             onError={(error) => {
                                 console.log("Video Error:", error);
@@ -168,7 +166,7 @@ export default function UploadVideoScreen({ navigation, route }) {
                         <View className="gap-2 w-full">
                             <Text className="font-semibold text-slate-800 text-base">Add hashtag</Text>
                             <View className="w-full relative">
-                                <View className="border border-gray-300">
+                                <View>
                                     <TextInput
                                         className="bg-gray-200 rounded-md h-30 px-4 py-2"
                                         placeholder="Enter your hashtag"
@@ -277,7 +275,7 @@ export default function UploadVideoScreen({ navigation, route }) {
                             </View>
                         </TouchableOpacity>
 
-                        <View className="w-full">
+                        <View className="w-full gap-4">
                             <View className="flex-row justify-between items-center">
                                 <View className="flex-row gap-2 items-center">
                                     <FontAwesome5 name="facebook" size={24} color="#197dca" />

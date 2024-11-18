@@ -4,24 +4,30 @@ import { privateTabs, tabs } from "./tabs";
 export const screenOptions = ({ route }) => {
     let iconName = tabs.find((tab) => tab.name === route.name).icon;
 
+    const tabBarLabelStyle = {
+        fontSize: 10,
+        paddingBottom: 4
+    };
+
+    const tabBarStyle = [
+        {
+            display: privateTabs[route.name] ? "none" : "flex",
+            paddingTop: 5
+        },
+        null
+    ];
+
+    const tabBarItemStyle = {
+        display: privateTabs[route.name] ? "none" : "block"
+    };
+
     return {
+        tabBarStyle,
+        tabBarItemStyle,
+        tabBarLabelStyle,
         headerShown: false,
-        tabBarIcon: ({ color, size }) => <Feather name={iconName} size={size} color={color} />,
         tabBarInactiveTintColor: "grey",
         tabBarActiveTintColor: "#F44B87",
-        tabBarItemStyle: {
-            display: privateTabs[route.name] ? "none" : "block"
-        },
-        tabBarLabelStyle: {
-            paddingBottom: 4,
-            fontSize: 10
-        },
-        tabBarStyle: [
-            {
-                display: "flex",
-                paddingTop: 5
-            },
-            null
-        ]
+        tabBarIcon: ({ color, size }) => <Feather name={iconName} size={size} color={color} />
     };
 };
