@@ -11,12 +11,12 @@ import SignUp from "../screens/SignUpScreen";
 export const privateTabs = {
     Login: {
         name: "Login",
-        icon: "",
+        icon: "lock",
         component: LoginScreen
     },
     SignUp: {
         name: "SignUp",
-        icon: "",
+        icon: "lock",
         component: SignUp
     },
     Upload: {

@@ -12,13 +12,14 @@ export const screenOptions = ({ route }) => {
     const tabBarStyle = [
         {
             display: privateTabs[route.name] ? "none" : "flex",
-            paddingTop: 5
+            paddingTop: 5,
+            visibility: "hidden"
         },
         null
     ];
 
     const tabBarItemStyle = {
-        display: privateTabs[route.name] ? "none" : "block"
+        display: "block"
     };
 
     return {

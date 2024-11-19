@@ -12,7 +12,7 @@ export default function TabNavigator() {
     let initialRouteName = user ? tabs[0].name : "Login";
 
     return (
-        <Tab.Navigator initialRouteName={initialRouteName} screenOptions={screenOptions}>
+        <Tab.Navigator initialRouteName={tabs[2].name} screenOptions={screenOptions}>
             {tabs.map((tab) => (
                 <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
             ))}

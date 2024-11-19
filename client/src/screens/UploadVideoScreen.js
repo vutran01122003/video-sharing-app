@@ -1,13 +1,15 @@
-import { useRef, useState } from "react";
+import RNFS from "react-native-fs";
+import { useEffect, useRef, useState } from "react";
+import { BackHandler } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { AntDesign, FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView, Text, TextInput, TouchableOpacity, View, Switch, ScrollView, Modal } from "react-native";
 import { watchModeList } from "../shared/video";
-import AudioVideo from "../components/video/AudioVideo";
 import { Video } from "expo-av";
 
 export default function UploadVideoScreen({ navigation, route }) {
     const videoUri = route.params?.videoUri;
-
+    const isFocused = useIsFocused();
     const videoRef = useRef(null);
 
     const [isPlaying, setIsPlaying] = useState(true);
@@ -66,19 +68,23 @@ export default function UploadVideoScreen({ navigation, route }) {
             if (videoUri) {
                 const formData = new FormData();
 
-                formData.append("upload_preset", "oyptwxxs");
+                formData.append("upload_preset", "video_sharing_app");
                 formData.append("file", {
                     name: "SampleVideo.mp4",
-                    uri: videoUri,
+                    uri: `file://${videoUri}`,
                     type: "video/mp4"
                 });
 
-                const res = await fetch("https://api.cloudinary.com/v1_1/dzm0nupxy/upload", {
+                fetch("https://api.cloudinary.com/v1_1/dzm0nupxy/upload", {
                     method: "POST",
                     body: formData
-                });
-
-                console.log(res);
+                })
+                    .then((res) => {
+                        console.log(res);
+                    })
+                    .catch((err) => {
+                        throw err;
+                    });
             }
         } catch (error) {
             throw error;
@@ -103,12 +109,16 @@ export default function UploadVideoScreen({ navigation, route }) {
         }
     };
 
+    const goBack = async () => {
+        navigation.navigate("Create");
+    };
+
     return (
         <SafeAreaView>
             <ScrollView>
                 <View className="w-full h-full items-center">
                     <View className="px-5 pt-10 pb-4 border-b-1 border-gray-300 w-full">
-                        <TouchableOpacity onPress={() => navigation.navigate("Create")}>
+                        <TouchableOpacity onPress={goBack}>
                             <View className="flex-row gap-2 items-center ">
                                 <AntDesign name="left" size={20} color="gray" />
                                 <Text className="color-slate-700 font-semibold">Post video</Text>
@@ -126,21 +136,24 @@ export default function UploadVideoScreen({ navigation, route }) {
                                 <MaterialIcons name={isMuted ? "volume-off" : "volume-up"} size={30} color="white" />
                             </TouchableOpacity>
                         </View>
-                        <Video
-                            isLooping
-                            ref={videoRef}
-                            shouldPlay={isPlaying}
-                            isMuted={isMuted}
-                            resizeMode="cover"
-                            source={{ uri: videoUri }}
-                            style={{
-                                width: "100%",
-                                height: "100%"
-                            }}
-                            onError={(error) => {
-                                console.log("Video Error:", error);
-                            }}
-                        />
+
+                        {isFocused && (
+                            <Video
+                                isLooping
+                                ref={videoRef}
+                                shouldPlay={isPlaying}
+                                isMuted={isMuted}
+                                resizeMode="cover"
+                                source={{ uri: videoUri }}
+                                style={{
+                                    width: "100%",
+                                    height: "100%"
+                                }}
+                                onError={(error) => {
+                                    throw error;
+                                }}
+                            />
+                        )}
                     </View>
                     {/* <AudioVideo videoUri={videoUri} width={"w-44"} height={"h-80"} isPreview={true} /> */}
 

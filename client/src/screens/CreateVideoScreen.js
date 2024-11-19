@@ -1,24 +1,27 @@
 import { Audio } from "expo-av";
+import RNFS from "react-native-fs";
+import { Dimensions } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { useSharedValue } from "react-native-worklets-core";
 import { TouchableOpacity, SafeAreaView, Text, View, Image } from "react-native";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Camera as CameraFaceDetector } from "react-native-vision-camera-face-detector";
 import { Camera, useCameraFormat, getCameraDevice, useCameraPermission } from "react-native-vision-camera";
 import ModalScreen from "./ModalScreen";
 import { timeLimit } from "../shared/video";
+import { applyFilter } from "../utils/commands";
+import { downloadImageToCache } from "../utils/cacheImage";
 import CircleProgressBar from "../components/alert/CircleProgressBar";
 import AnimatedAudioButton from "../components/custom/AnimatedAudioButton";
 import pig_nose_filter from "../../assets/filter/pig_nose_filter.png";
-import { Dimensions } from "react-native";
 
 export default function CreateVideoScreen({ navigation, route }) {
+    const fps = 60;
     const windowWidth = Dimensions.get("window").width;
 
     const cameraRef = useRef();
     const [time, setTime] = useState(0);
-    const format = useCameraFormat(device, [{ fps: 60, aspectRatio: 9 / 16 }]);
+    const format = useCameraFormat(device, [{ fps, aspectRatio: 9 / 16 }]);
 
     const { hasPermission: hasCameraPermission, requestPermission } = useCameraPermission();
     const [hasAudioPermission, setHasAudioPermission] = useState(null);
@@ -30,8 +33,12 @@ export default function CreateVideoScreen({ navigation, route }) {
     const [isTorch, setIsTorch] = useState(false);
     const [isRecord, setIsRecord] = useState(false);
 
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [viewSize, setViewSize] = useState({ width: 0, height: 0 });
+    const [videoPath, setVideoPath] = useState("");
+    const [filterPath, setFilterPath] = useState("");
+    const [startTime, setStartTime] = useState(null);
+    const [positions, setPositions] = useState([]);
+    const [filterLayout, setFilterLayout] = useState({ width: 0, height: 0 });
+    const [cameraSize, setCameraSize] = useState({ width: 0, height: 0, x: 0, y: 0 });
 
     const devices = Camera.getAvailableCameraDevices();
     const [device, setDevice] = useState(getCameraDevice(devices, "back"));
@@ -50,13 +57,11 @@ export default function CreateVideoScreen({ navigation, route }) {
         try {
             if (cameraRef.current && hasCameraPermission && hasAudioPermission) {
                 setIsRecord(true);
+                setStartTime(Date.now());
 
                 cameraRef.current.startRecording({
                     onRecordingError: (error) => console.error(error),
-                    onRecordingFinished: (video) => {
-                        const path = video.path;
-                        navigation.navigate("Upload", { videoUri: `file://${path}` });
-                    }
+                    onRecordingFinished: async (video) => setVideoPath(video.path)
                 });
             }
         } catch (error) {
@@ -88,13 +93,18 @@ export default function CreateVideoScreen({ navigation, route }) {
     function handleFacesDetection(faces) {
         if (true) {
             const { x, y } = faces[0].landmarks.NOSE_BASE;
-            setPosition({
-                x: windowWidth - x + viewSize.width - 10,
-                y: y - 10
-            });
+            if (isRecord) {
+                setPositions((prev) => [
+                    ...prev,
+                    {
+                        x: x - filterLayout.width / 2,
+                        y: y,
+                        timestamp: (Date.now() - startTime) / 1000
+                    }
+                ]);
+            }
         }
     }
-    console.log(position);
 
     useEffect(() => {
         let timer = null;
@@ -114,132 +124,170 @@ export default function CreateVideoScreen({ navigation, route }) {
     }, [isRecord]);
 
     useEffect(() => {
-        try {
-            (async () => {
-                await requestPermission();
-                const audioStatus = await Audio.requestPermissionsAsync();
-                setHasAudioPermission(audioStatus.status === "granted");
-            })();
-        } catch (error) {
-            throw error;
+        (async () => {
+            await requestPermission();
+            const audioStatus = await Audio.requestPermissionsAsync();
+            setHasAudioPermission(audioStatus.status === "granted");
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (videoPath && filterPath) {
+            console.log("ok");
+
+            Promise.all([RNFS.exists(videoPath), RNFS.exists(filterPath)]).then((results) => {
+                if (results.every((result) => result)) console.log("ok");
+                applyFilter({
+                    videoPath: videoPath,
+                    filterPath: filterPath,
+                    positions: positions
+                })
+                    .then((outputVideo) => {
+                        setPositions([]);
+                        RNFS.unlink(videoPath).then(() => navigation.navigate("Upload", { videoUri: outputVideo }));
+                    })
+                    .catch((error) => {
+                        throw error;
+                    });
+            });
         }
+    }, [videoPath, filterPath]);
+
+    useEffect(() => {
+        (async () => {
+            const cachePath = await downloadImageToCache(
+                "https://res.cloudinary.com/dzm0nupxy/image/upload/v1731921259/video_sharing_app/filters/nbzpibvxwzpvuekenvyr.png"
+            );
+            setFilterPath(cachePath);
+        })();
     }, []);
 
     if (!hasCameraPermission) return <View />;
     if (device === null) return <View />;
 
     return (
-        <SafeAreaView className="relative flex-1">
-            <CameraFaceDetector
-                ref={cameraRef}
-                video={true}
-                audio={true}
-                format={format}
-                device={device}
-                resizeMode="cover"
-                isActive={isFocused ? true : false}
-                faceDetectionCallback={handleFacesDetection}
-                faceDetectionOptions={faceDetectionOptions}
-                isMirrored={false}
-                style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%" }}
-            />
-
+        <SafeAreaView>
             <View
+                className="relative w-full h-full"
                 onLayout={(event) => {
-                    setViewSize(event.nativeEvent.layout);
-                }}
-                style={{
-                    position: "absolute",
-                    top: position.y || 0,
-                    left: position.x || 0
+                    setCameraSize(event.nativeEvent.layout);
                 }}
             >
-                <Image source={pig_nose_filter} />
+                <CameraFaceDetector
+                    ref={cameraRef}
+                    video={true}
+                    audio={true}
+                    format={format}
+                    device={device}
+                    resizeMode="cover"
+                    isActive={isFocused ? true : false}
+                    faceDetectionCallback={handleFacesDetection}
+                    faceDetectionOptions={faceDetectionOptions}
+                    isMirrored={false}
+                    style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%" }}
+                />
+
+                <View
+                    onLayout={(event) => {
+                        setFilterLayout(event.nativeEvent.layout);
+                    }}
+                    style={{
+                        position: "absolute",
+                        top: positions[positions.length - 1]?.y - 10 || 0,
+                        left: windowWidth - positions[positions.length - 1]?.x + 10 || 0
+                    }}
+                >
+                    <Image source={pig_nose_filter} />
+                </View>
+
+                <View className="h-full w-full relative">
+                    <View className="w-full absolute top-9 left-0 flex-row items-center p-2">
+                        <TouchableOpacity onPress={onGoHome}>
+                            <Ionicons name="close" size={24} color="white" />
+                        </TouchableOpacity>
+
+                        <AnimatedAudioButton nameAudio={nameAudio} setIsAudioModal={setIsAudioModal} />
+                    </View>
+
+                    <View className="w-12 absolute right-2 top-24 gap-8">
+                        <TouchableOpacity onPress={onToggleCameraDevice}>
+                            <View className="gap-1 items-center">
+                                <Ionicons name="camera-reverse-outline" size={28} color="white" />
+                                <Text className="color-white">Flip</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity>
+                            <View className="gap-1 items-center">
+                                <MaterialCommunityIcons name="movie-filter-outline" size={28} color="white" />
+                                <Text className="color-white">Filter</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity>
+                            <View className="gap-1 items-center">
+                                <MaterialCommunityIcons name="clock-time-three-outline" size={28} color="white" />
+                                <Text className="color-white">Timer</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={onToggleCameraTorch}>
+                            <View className="gap-1 items-center">
+                                <Ionicons
+                                    name={isTorch ? "flash-outline" : "flash-off-outline"}
+                                    size={28}
+                                    color="white"
+                                />
+                                <Text className="color-white">Flash</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={onToggleMic}>
+                            <View className="gap-1 items-center">
+                                <Feather name={isMute ? "mic-off" : "mic"} size={28} color="white" />
+                                <Text className="color-white">Mic</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                    <View className="p-4 mb-2 w-full absolute bottom-0 left-0 flex-row justify-between items-center">
+                        <TouchableOpacity>
+                            <View className="gap-2 items-center">
+                                <FontAwesome name="magic" size={28} color="white" />
+                                <Text className="color-white">Effect</Text>
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={isRecord ? onStopRecordVideo : onRecordVideo}>
+                            <View className="relative">
+                                {isRecord && (
+                                    <View className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                        <CircleProgressBar progress={time / timeLimit} />
+                                    </View>
+                                )}
+
+                                <View
+                                    className={`w-20 h-20 rounded-full ${
+                                        !isRecord ? "bg-red-600 border-8 border-red-500/70" : "bg-red-600/30"
+                                    }`}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity>
+                            <View className="gap-2 items-center">
+                                <FontAwesome name="image" size={28} color="white" />
+                                <Text className="color-white">Upload</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <ModalScreen
+                    isModalShow={isAudioModal}
+                    setIsModalShow={setIsAudioModal}
+                    setNameAudio={setNameAudio}
+                    className="z-50"
+                />
             </View>
-
-            <View className="h-full w-full relative">
-                <View className="w-full absolute top-9 left-0 flex-row items-center p-2">
-                    <TouchableOpacity onPress={onGoHome}>
-                        <Ionicons name="close" size={24} color="white" />
-                    </TouchableOpacity>
-
-                    <AnimatedAudioButton nameAudio={nameAudio} setIsAudioModal={setIsAudioModal} />
-                </View>
-
-                <View className="w-12 absolute right-2 top-24 gap-8">
-                    <TouchableOpacity onPress={onToggleCameraDevice}>
-                        <View className="gap-1 items-center">
-                            <Ionicons name="camera-reverse-outline" size={28} color="white" />
-                            <Text className="color-white">Flip</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity>
-                        <View className="gap-1 items-center">
-                            <MaterialCommunityIcons name="movie-filter-outline" size={28} color="white" />
-                            <Text className="color-white">Filter</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity>
-                        <View className="gap-1 items-center">
-                            <MaterialCommunityIcons name="clock-time-three-outline" size={28} color="white" />
-                            <Text className="color-white">Timer</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={onToggleCameraTorch}>
-                        <View className="gap-1 items-center">
-                            <Ionicons name={isTorch ? "flash-outline" : "flash-off-outline"} size={28} color="white" />
-                            <Text className="color-white">Flash</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={onToggleMic}>
-                        <View className="gap-1 items-center">
-                            <Feather name={isMute ? "mic-off" : "mic"} size={28} color="white" />
-                            <Text className="color-white">Mic</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-                <View className="p-4 mb-2 w-full absolute bottom-0 left-0 flex-row justify-between items-center">
-                    <TouchableOpacity>
-                        <View className="gap-2 items-center">
-                            <FontAwesome name="magic" size={28} color="white" />
-                            <Text className="color-white">Effect</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={isRecord ? onStopRecordVideo : onRecordVideo}>
-                        <View className="relative">
-                            {isRecord && (
-                                <View className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                    <CircleProgressBar progress={time / timeLimit} />
-                                </View>
-                            )}
-
-                            <View
-                                className={`w-20 h-20 rounded-full ${
-                                    !isRecord ? "bg-red-600 border-8 border-red-500/70" : "bg-red-600/30"
-                                }`}
-                            />
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity>
-                        <View className="gap-2 items-center">
-                            <FontAwesome name="image" size={28} color="white" />
-                            <Text className="color-white">Upload</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <ModalScreen
-                isModalShow={isAudioModal}
-                setIsModalShow={setIsAudioModal}
-                setNameAudio={setNameAudio}
-                className="z-50"
-            />
         </SafeAreaView>
     );
 }
