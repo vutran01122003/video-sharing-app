@@ -1,0 +1,27 @@
+import { z, TypeOf } from "zod";
+
+export const uploadVideoSchema = z.object({
+    body: z.object({
+        audio_id: z.string().optional(),
+        user_id: z.string({ required_error: "user_id is required" }),
+        video_id: z.string({ required_error: "video_id is required" }),
+        video_url: z.string({ required_error: "video_url is required" }),
+        title: z.string({ required_error: "title is required" }).max(500, "Title shoudle be max 500 characters"),
+        description: z.string().max(500, "Description shoudle be max 500 characters").optional(),
+        hashtags: z.array(z.string()).optional(),
+        tagLink: z.array(z.string()).optional()
+    })
+});
+
+export const updateVideoSchema = z.object({
+    body: z.object({
+        title: z.string().max(500, "Title shoudle be max 500 characters").optional(),
+        description: z.string().max(500, "Description shoudle be max 500 characters").optional(),
+        hashtags: z.array(z.string()).optional(),
+        tagLink: z.array(z.string()).optional(),
+        is_private: z.boolean().optional()
+    })
+});
+
+export type UpdateVideoInput = TypeOf<typeof updateVideoSchema>["body"];
+export type UploadVideoInput = TypeOf<typeof uploadVideoSchema>["body"];

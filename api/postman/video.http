@@ -1,0 +1,31 @@
+@url=http://localhost:8000/api
+
+### Upload video
+POST {{url}}/videos
+Content-Type: application/json
+
+{   
+    "user_id": "6739fc7620630489bd285dd3",
+    "video_id": "video_sharing_app/khbpgfyzuecstq5rkeyk",
+    "video_url": "https://res.cloudinary.com/dzm0nupxy/video/upload/v1732007431/video_sharing_app/khbpgfyzuecstq5rkeyk.mov",
+    "title": "This is just demo title 2",
+    "description": "This is just demo description 2"
+}
+
+### Get videos by user_id 
+GET {{url}}/users/6739fc7620630489bd285dd3/videos
+
+### Get video by id
+GET {{url}}/videos/673c95a008500cc926a2c0ad
+
+### Update video by id
+PATCH {{url}}/videos/673c95a008500cc926a2c0ad
+Content-Type: application/json
+
+{
+    "title": "AAAA",
+    "description": "AAA" 
+}
+
+### Delete video by id
+DELETE {{url}}/videos/673c95a008500cc926a2c0ad

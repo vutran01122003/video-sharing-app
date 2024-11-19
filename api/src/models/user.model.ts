@@ -6,6 +6,7 @@ dotenv.config();
 
 const conn: Connection = database.getConnection();
 const { SALT_ROUND } = process.env;
+const [DOC, COL] = ["user", "users"];
 
 export interface UserDocument extends Document {
     user_name: string;
@@ -16,31 +17,37 @@ export interface UserDocument extends Document {
     comparePassword(password: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<UserDocument>({
-    user_name: {
-        type: String,
-        required: true,
-        unique: true
+const userSchema = new Schema<UserDocument>(
+    {
+        user_name: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        email: {
+            type: String,
+            required: true,
+            lowercase: true,
+            unique: true
+        },
+        password: {
+            type: String,
+            required: true
+        },
+        follower: {
+            type: [{ ref: DOC, type: mongoose.Types.ObjectId }],
+            default: []
+        },
+        following: {
+            type: [{ ref: DOC, type: mongoose.Types.ObjectId }],
+            default: []
+        }
     },
-    email: {
-        type: String,
-        required: true,
-        lowercase: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    follower: {
-        type: [{ ref: "user", type: mongoose.Types.ObjectId }],
-        default: []
-    },
-    following: {
-        type: [{ ref: "user", type: mongoose.Types.ObjectId }],
-        default: []
+    {
+        collection: COL,
+        timestamps: true
     }
-});
+);
 
 userSchema.methods.comparePassword = async function (this: UserDocument, candidatePassword: string): Promise<boolean> {
     try {
@@ -62,6 +69,6 @@ userSchema.pre("save", async function (this: UserDocument, next: CallbackWithout
     }
 });
 
-const User = conn.model<UserDocument>("users", userSchema);
+const User = conn.model<UserDocument>(COL, userSchema);
 
 export default User;
