@@ -1,10 +1,23 @@
-import { Text, View, StyleSheet, Image, SafeAreaView, Pressable, TextInput, Alert } from "react-native";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { postDataApi } from "../utils/fetchData";
+import {
+    Text,
+    View,
+    StyleSheet,
+    Image,
+    SafeAreaView,
+    Pressable,
+    TextInput,
+    ScrollView,
+    TouchableOpacity
+} from "react-native";
+import { register } from "../redux/actions/auth.action";
 
 export default function SignUp({ navigation }) {
+    const dispatch = useDispatch();
+
     const [isShow, setIsShow] = useState(true);
     const [isShowRe, setIsShowRe] = useState(true);
     const [userName, setUserName] = useState("");
@@ -12,22 +25,6 @@ export default function SignUp({ navigation }) {
     const [password, setPassword] = useState("");
     const [rePassword, setRePassword] = useState("");
     const [errors, setErrors] = useState({});
-
-    const registerAccount = async () => {
-        postDataApi("/users/register", {
-            email,
-            password,
-            user_name: userName,
-            confirm: rePassword
-        })
-            .then((res) => {
-                Alert.alert("Sign up successfully!");
-                navigation.navigate("Login");
-            })
-            .catch((e) => {
-                Alert.alert(e.response?.data.message);
-            });
-    };
 
     const validate = () => {
         let tempErrors = {};
@@ -56,91 +53,126 @@ export default function SignUp({ navigation }) {
         return Object.keys(tempErrors).length === 0;
     };
 
+    const resetInput = () => {
+        setEmail("");
+        setUserName("");
+        setPassword("");
+        setRePassword("");
+    };
+
     const handleSignUp = () => {
-        if (validate()) registerAccount();
+        console.log("ok");
+        if (validate()) {
+            dispatch(
+                register({
+                    registerData: {
+                        user_name: userName,
+                        email,
+                        password,
+                        confirm: rePassword
+                    },
+                    navigation
+                })
+            );
+            resetInput();
+        }
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Pressable style={styles.backContainer} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back-outline" size={24} color="lightgray" />
-            </Pressable>
-            <View style={{ flex: 2, alignItems: "center", justifyContent: "center" }}>
-                <Image source={require("../../assets/tiktoklogo.png")} style={{ width: 200, height: 200 }} />
-                <Text style={styles.titleText}>Nice to see you!</Text>
-                <Text style={styles.subtitleText}>Create your account</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-                <View style={styles.formInput}>
-                    <FontAwesome name="user" size={24} color="#F44B87" />
-                    <TextInput
-                        placeholder="Enter your user name"
-                        placeholderTextColor="#ccc"
-                        style={{ flex: 1 }}
-                        onChangeText={(value) => setUserName(value)}
-                    />
-                </View>
-                {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
-
-                <View style={styles.formInput}>
-                    <FontAwesome name="envelope" size={24} color="#F44B87" />
-                    <TextInput
-                        placeholder="Enter your email"
-                        placeholderTextColor="#ccc"
-                        style={{ flex: 1 }}
-                        keyboardType="email-address"
-                        onChangeText={(value) => setEmail(value)}
-                    />
-                </View>
-                {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-                <View style={styles.formInput}>
-                    <FontAwesome name="lock" size={24} color="#F44B87" />
-                    <TextInput
-                        placeholder="Enter your password"
-                        placeholderTextColor="#ccc"
-                        style={{ flex: 1 }}
-                        secureTextEntry={isShow}
-                        onChangeText={(value) => setPassword(value)}
-                    />
-                    <Pressable onPress={() => setIsShow(!isShow)}>
-                        <Ionicons name={isShow ? "eye-sharp" : "eye-off"} size={24} color="#F44B87" />
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+            <ScrollView>
+                <View style={styles.container}>
+                    <Pressable style={styles.backContainer} onPress={() => navigation.navigate("Login")}>
+                        <Ionicons name="arrow-back-outline" size={24} color="#F44B87" />
                     </Pressable>
-                </View>
-                {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-                <View style={styles.formInput}>
-                    <FontAwesome name="lock" size={24} color="#F44B87" />
-                    <TextInput
-                        placeholder="Re-enter your password"
-                        placeholderTextColor="#ccc"
-                        style={{ flex: 1 }}
-                        secureTextEntry={isShowRe}
-                        onChangeText={(value) => setRePassword(value)}
-                    />
-                    <Pressable onPress={() => setIsShowRe(!isShowRe)}>
-                        <Ionicons name={isShowRe ? "eye-sharp" : "eye-off"} size={24} color="#F44B87" />
-                    </Pressable>
-                </View>
-                {errors.rePassword && <Text style={styles.errorText}>{errors.rePassword}</Text>}
-
-                <Pressable style={{ flex: 1 }} onPress={handleSignUp}>
-                    <View style={styles.buttonSignup}>
-                        <Text style={{ color: "white", fontSize: 16 }}>Sign up</Text>
+                    <View style={{ alignItems: "center", marginBottom: 30 }}>
+                        <Image source={require("../../assets/tiktoklogo.png")} style={{ width: 150, height: 150 }} />
+                        <Text style={styles.titleText}>Nice to see you!</Text>
+                        <Text style={styles.subtitleText}>Create your account</Text>
                     </View>
-                </Pressable>
-            </View>
+
+                    <View style={{ flex: 2 }}>
+                        <View style={styles.formInput}>
+                            <FontAwesome name="user" size={24} color="#F44B87" />
+                            <TextInput
+                                placeholder="Enter your user name"
+                                placeholderTextColor="#ccc"
+                                style={{ flex: 1 }}
+                                value={userName}
+                                onChangeText={(value) => setUserName(value)}
+                            />
+                        </View>
+
+                        {errors.userName && <Text style={styles.errorText}>{errors.userName}</Text>}
+
+                        <View style={styles.formInput}>
+                            <FontAwesome name="envelope" size={18} color="#F44B87" />
+                            <TextInput
+                                placeholder="Enter your email"
+                                placeholderTextColor="#ccc"
+                                style={{ flex: 1 }}
+                                keyboardType="email-address"
+                                onChangeText={(value) => setEmail(value)}
+                                value={email}
+                            />
+                        </View>
+
+                        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+                        <View style={styles.formInput}>
+                            <FontAwesome name="lock" size={24} color="#F44B87" />
+                            <TextInput
+                                placeholder="Enter your password"
+                                placeholderTextColor="#ccc"
+                                style={{ flex: 1 }}
+                                secureTextEntry={isShow}
+                                onChangeText={(value) => setPassword(value)}
+                                value={password}
+                            />
+                            <Pressable onPress={() => setIsShow(!isShow)}>
+                                <Ionicons name={isShow ? "eye-sharp" : "eye-off"} size={24} color="#F44B87" />
+                            </Pressable>
+                        </View>
+
+                        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+
+                        <View style={styles.formInput}>
+                            <FontAwesome name="lock" size={24} color="#F44B87" />
+                            <TextInput
+                                placeholder="Re-enter your password"
+                                placeholderTextColor="#ccc"
+                                style={{ flex: 1 }}
+                                secureTextEntry={isShowRe}
+                                onChangeText={(value) => setRePassword(value)}
+                                value={rePassword}
+                            />
+                            <Pressable onPress={() => setIsShowRe(!isShowRe)}>
+                                <Ionicons name={isShowRe ? "eye-sharp" : "eye-off"} size={24} color="#F44B87" />
+                            </Pressable>
+                        </View>
+
+                        {errors.rePassword && <Text style={styles.errorText}>{errors.rePassword}</Text>}
+
+                        <TouchableOpacity onPress={handleSignUp}>
+                            <View style={styles.buttonSignup}>
+                                <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>Register</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        padding: 10,
-        flex: 1,
-        marginTop: 44
+        padding: 20,
+        backgroundColor: "#fff"
     },
     backContainer: {
         position: "absolute",
@@ -154,10 +186,10 @@ const styles = StyleSheet.create({
         color: "#F44B87"
     },
     subtitleText: {
-        fontWeight: "400",
+        fontWeight: "500",
         fontSize: 16,
         textAlign: "center",
-        color: "pink"
+        color: "#F44B87"
     },
     formInput: {
         flexDirection: "row",
@@ -167,19 +199,18 @@ const styles = StyleSheet.create({
         borderColor: "#F44B87",
         borderRadius: 10,
         padding: 10,
-        gap: 5,
-        width: "90%",
+        gap: 10,
+        width: "100%",
         height: 45,
-        marginBottom: 10
+        marginBottom: 15
     },
     buttonSignup: {
-        backgroundColor: "#F44B87",
-        width: "100%",
-        height: 40,
+        height: 50,
+        marginTop: 20,
         borderRadius: 5,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 10
+        backgroundColor: "#F44B87"
     },
     errorText: {
         color: "red",

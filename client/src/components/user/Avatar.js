@@ -1,10 +1,10 @@
-import { View, Text, Image, SafeAreaView } from "react-native";
+import { View, Text, Image } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
 export default function Avatar({ image, username, isStory, isCreateStoryButton, width, height, isHorizontal }) {
     return (
         <View className={`gap-2 items-center ${isHorizontal ? "flex-row" : "flex-col"}`}>
-            <View className={`relative ${width ? width : "w-16"} ${height ? height : "h-16"}`}>
+            <View className={`relative ${width || "w-16"} ${height || "h-16"}`}>
                 <Image
                     className={`w-full h-full rounded-full ${
                         isStory ? "border-2 border-blue-400" : "border border-gray-200"

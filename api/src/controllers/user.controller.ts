@@ -15,7 +15,7 @@ class UserController {
             const createdUser: UserDocument = await UserService.create(userData);
 
             res.status(200).json({
-                msg: "Create user successfully",
+                message: "Create user successfully",
                 data: omit(createdUser, "password")
             });
         } catch (error) {
@@ -41,8 +41,8 @@ class UserController {
             const token = await AuthService.signToken(userId);
 
             res.status(200).json({
-                msg: "Login successfully",
-                metadata: {
+                message: "Login successfully",
+                data: {
                     user: omit(user.toObject(), "password"),
                     token
                 }

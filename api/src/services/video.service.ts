@@ -6,6 +6,7 @@ class VideoService {
     static async uploadVideo(videoUploadData: UploadVideoInput): Promise<VideoDocument> {
         try {
             const video = await Video.create(videoUploadData);
+            await video.populate("user");
             return video.toObject();
         } catch (error) {
             throw error;
@@ -14,7 +15,7 @@ class VideoService {
 
     static async findAllVideoByUserId(user_id: string): Promise<VideoDocument[]> {
         try {
-            const videos = await Video.find({ user_id });
+            const videos = await Video.find({ user: user_id }).populate("user");
             return videos;
         } catch (error) {
             throw error;

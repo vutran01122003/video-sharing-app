@@ -5,6 +5,8 @@ export const applyFilter = async ({ videoPath, filterPath, positions }) => {
     return new Promise((resolve, reject) => {
         try {
             const outputPath = `${RNFS.CachesDirectoryPath}/output_${Date.now()}.mov`;
+            const pathList = [];
+
             let x = "";
             let y = "";
             let endBracketX = "NAN";
@@ -15,14 +17,14 @@ export const applyFilter = async ({ videoPath, filterPath, positions }) => {
 
             for (let index = 0; index < positions.length; index++) {
                 const startTime = positions[index].timestamp;
-                const endTime = positions[index + 1]?.timestamp || positions[index].timestamp;
+                const endTime = positions[index + 1]?.timestamp || startTime;
 
                 x += `if(between(t, ${startTime}, ${endTime}), ${positions[index].x}, `;
                 y += `if(between(t, ${startTime}, ${endTime}), ${positions[index].y}, `;
                 endBracketX += ")";
                 endBracketY += ")";
 
-                if ((index + 1) % 20 === 0 || index + 1 === positions.length) {
+                if ((index + 1) % 50 === 0 || index + 1 === positions.length) {
                     x += endBracketX;
                     y += endBracketY;
 
@@ -56,20 +58,29 @@ export const applyFilter = async ({ videoPath, filterPath, positions }) => {
                 const returnCode = await session.getReturnCode();
 
                 if (returnCode.isValueSuccess) {
+                    let concatContent = [];
+                    let concatFilePath = `${RNFS.CachesDirectoryPath}/concat_${Date.now()}.txt`;
+
                     await Promise.all(
                         filterCommandParts.map((filterCommandPart, index) => {
                             const overlayingCommand = `-i ${videoParts[index].path} -i ${filterPath} -filter_complex "${filterCommandPart}" -c:a copy ${videoParts[index].outputPath}`;
+                            concatContent.push(`file '${videoParts[index].outputPath}'`);
                             return FFmpegKit.execute(overlayingCommand);
                         })
                     );
 
-                    const mergingCommand = `-i "concat:${videoParts
-                        .map((part) => part.outputPath)
-                        .join(" | ")}" -c copy ${outputPath}`;
+                    await RNFS.writeFile(concatFilePath, concatContent.join("\n"), "utf8");
+
+                    const mergingCommand = `-f concat -safe 0 -i ${concatFilePath} -c copy ${outputPath}`;
 
                     FFmpegKit.execute(mergingCommand).then(async (session) => {
                         const returnCode = await session.getReturnCode();
-                        if (returnCode.isValueSuccess) resolve(outputPath);
+
+                        if (returnCode.isValueSuccess) {
+                            RNFS.unlink(videoPath)
+                                .then(() => resolve(outputPath))
+                                .catch((err) => reject(err));
+                        }
                     });
                 }
             });

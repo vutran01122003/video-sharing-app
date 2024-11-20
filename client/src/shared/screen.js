@@ -19,7 +19,7 @@ export const screenOptions = ({ route }) => {
     ];
 
     const tabBarItemStyle = {
-        display: "block"
+        display: privateTabs[route.name] ? "none" : "block"
     };
 
     return {

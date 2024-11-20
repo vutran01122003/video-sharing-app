@@ -3,6 +3,7 @@ import { type Request, type Response, type NextFunction, query } from "express";
 
 export const validateResource = (schema: Schema) => (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log(req.body);
         schema.parse({
             body: req.body,
             params: req.params,

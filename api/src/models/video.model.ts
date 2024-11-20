@@ -8,7 +8,8 @@ const conn: Connection = database.getConnection();
 const [DOC, COL] = ["video", "videos"];
 
 export interface VideoDocument extends Document {
-    user_id: UserDocument["_id"];
+    thumbnail: String;
+    user: UserDocument["_id"];
     video_id: string;
     video_url: string;
     title: string;
@@ -17,15 +18,22 @@ export interface VideoDocument extends Document {
     hashtags: string[];
     tagLink: UserDocument["_id"][];
     is_private: boolean;
+    is_comment_allowed: boolean;
     likes: UserDocument["_id"][];
+    views: number;
     comments: CommentDocument["id"][];
 }
 
 const videoSchema = new Schema<VideoDocument>(
     {
-        user_id: {
+        user: {
             type: mongoose.Types.ObjectId,
-            ref: "User"
+            ref: "user"
+        },
+        thumbnail: {
+            type: String,
+            default:
+                "https://res.cloudinary.com/dzm0nupxy/image/upload/v1732095694/video_sharing_app/default/dchhsrpvkachmjmcv6bv.jpg"
         },
         video_id: {
             type: String,
@@ -46,7 +54,7 @@ const videoSchema = new Schema<VideoDocument>(
         },
         audio_id: {
             type: mongoose.Types.ObjectId,
-            ref: "Audio"
+            ref: "audio"
         },
         hashtags: {
             type: [String],
@@ -56,7 +64,7 @@ const videoSchema = new Schema<VideoDocument>(
             type: [
                 {
                     type: mongoose.Types.ObjectId,
-                    ref: "User"
+                    ref: "user"
                 }
             ],
             default: []
@@ -65,19 +73,27 @@ const videoSchema = new Schema<VideoDocument>(
             type: [
                 {
                     type: mongoose.Types.ObjectId,
-                    ref: "User"
+                    ref: "user"
                 }
             ],
             default: []
+        },
+        views: {
+            type: Number,
+            default: 0
         },
         comments: {
             type: [
                 {
                     type: mongoose.Types.ObjectId,
-                    ref: "Comment"
+                    ref: "comment"
                 }
             ],
             default: []
+        },
+        is_comment_allowed: {
+            type: Boolean,
+            default: true
         },
         is_private: {
             type: Boolean,

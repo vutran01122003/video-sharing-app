@@ -11,7 +11,7 @@ class VideoController {
             const video: VideoDocument = await VideoService.uploadVideo(uploadVideoData);
 
             res.status(201).json({
-                msg: "Upload video successfully",
+                message: "Upload video successfully",
                 data: video
             });
         } catch (error) {
@@ -26,7 +26,7 @@ class VideoController {
             const videos: VideoDocument[] = await VideoService.findAllVideoByUserId(user_id);
 
             res.status(200).json({
-                msg: "Get videos by user id successfully",
+                message: "Get videos by user id successfully",
                 data: videos
             });
         } catch (error) {
@@ -41,7 +41,7 @@ class VideoController {
             const video: VideoDocument = await VideoService.findVideoById(video_id);
 
             res.status(200).json({
-                msg: "Get videos by user id successfully",
+                message: "Get videos by user id successfully",
                 data: video
             });
         } catch (error) {
@@ -57,7 +57,7 @@ class VideoController {
             const updatedVideo: VideoDocument = await VideoService.updateVideoById(video_id, updatedVideoData);
 
             res.status(200).json({
-                msg: "Update video successfully",
+                message: "Update video successfully",
                 data: updatedVideo
             });
         } catch (error) {
@@ -72,7 +72,7 @@ class VideoController {
             await VideoService.deleteVideoById(video_id);
 
             res.status(200).json({
-                msg: "Delete video successfully"
+                message: "Delete video successfully"
             });
         } catch (error) {
             next(error);

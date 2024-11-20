@@ -9,6 +9,7 @@ const { SALT_ROUND } = process.env;
 const [DOC, COL] = ["user", "users"];
 
 export interface UserDocument extends Document {
+    avatar: string;
     user_name: string;
     email: string;
     password: string;
@@ -19,6 +20,11 @@ export interface UserDocument extends Document {
 
 const userSchema = new Schema<UserDocument>(
     {
+        avatar: {
+            type: String,
+            default:
+                "https://res.cloudinary.com/dzm0nupxy/image/upload/v1732087543/video_sharing_app/avatars/gpcekvmmiwknqemlikcf.jpg"
+        },
         user_name: {
             type: String,
             required: true,
@@ -69,6 +75,6 @@ userSchema.pre("save", async function (this: UserDocument, next: CallbackWithout
     }
 });
 
-const User = conn.model<UserDocument>(COL, userSchema);
+const User = conn.model<UserDocument>(DOC, userSchema);
 
 export default User;

@@ -1,49 +1,50 @@
 import { Video } from "expo-av";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect } from "react";
+import { useRoute, useIsFocused } from "@react-navigation/native";
 import { View, TouchableOpacity, PanResponder, Animated, SafeAreaView, Dimensions } from "react-native";
-import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import CommentsModal from "../modal/ModalComment";
 
-export default function AudioVideo({  videoUri, width, height, isPreview, initialIndex=0}) {
+export default function AudioVideo({ videoUri, width, height, isPreview, initialIndex = 0 }) {
+    const isFocus = useIsFocused();
+    const { videos, indexVideo } = useRoute().params;
+
     const videoRef = useRef(null);
     const scrollY = useRef(new Animated.Value(0)).current;
+    const fadeAnim = useRef(new Animated.Value(1)).current;
+
     const [isPlaying, setIsPlaying] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const { videos, indexVideo } = useRoute().params;
+
     const [currentIndex, setCurrentIndex] = useState(initialIndex ?? indexVideo);
     const [currentVideo, setCurrentVideo] = useState(videos[initialIndex]);
     const [isSwipeEnabled, setIsSwipeEnabled] = useState(true);
-    const fadeAnim = useRef(new Animated.Value(1)).current;
-    const isFocus = useIsFocused();
-    
+
     // Thêm một timer để tránh việc swipe liên tục
     const swipeThrottleTimeout = useRef(null);
-    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+    const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
     useEffect(() => {
-        
         return () => {
-            // Cleanup timer khi component unmount
-            if (swipeThrottleTimeout.current) {
-                clearTimeout(swipeThrottleTimeout.current);
-            }
+            if (swipeThrottleTimeout.current) clearTimeout(swipeThrottleTimeout.current);
         };
     }, []);
+
     // load lại video khi chuyển tab
-    async function loadVideo(){
-        if(!isFocus){
+    async function loadVideo() {
+        if (!isFocus) {
             if (videoRef.current) {
                 await videoRef.current.pauseAsync();
                 await videoRef.current.unloadAsync();
-            } 
-        }else{
-            if (videoRef.current) {
-                await videoRef.current.loadAsync({uri:videoUri ?? currentVideo.url});
-                await videoRef.current.playAsync();
-               
             }
-        }}
+        } else {
+            if (videoRef.current) {
+                await videoRef.current.loadAsync({ uri: videoUri ?? currentVideo.video_url });
+                await videoRef.current.playAsync();
+            }
+        }
+    }
     useEffect(() => {
         loadVideo();
     }, [isFocus]);
@@ -61,9 +62,9 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
                 setIsSwipeEnabled(false); // Tạm thời vô hiệu hóa swipe
 
                 if (gestureState.dy < 0) {
-                    await handleSwipe('up');
+                    await handleSwipe("up");
                 } else {
-                    await handleSwipe('down');
+                    await handleSwipe("down");
                 }
 
                 // Cho phép swipe lại sau 500ms
@@ -75,7 +76,7 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
             Animated.spring(scrollY, {
                 toValue: 0,
                 useNativeDriver: true,
-                bounciness: 8,
+                bounciness: 8
             }).start();
         }
     });
@@ -95,8 +96,10 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
                 useNativeDriver: true
             })
         ]).start();
+
         let newIndex;
-        if (direction === 'up') {
+
+        if (direction === "up") {
             newIndex = (currentIndex + 1) % videos.length;
         } else {
             newIndex = currentIndex - 1 < 0 ? videos.length - 1 : currentIndex - 1;
@@ -111,6 +114,7 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
         setCurrentIndex(newIndex);
         setCurrentVideo(videos[newIndex]);
         setIsPlaying(true);
+
         // Đảm bảo video mới sẽ play
         setTimeout(async () => {
             if (videoRef.current) {
@@ -142,7 +146,7 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
     };
 
     return (
-        <SafeAreaView className='flex-1'>
+        <SafeAreaView className="flex-1">
             <Animated.View
                 className={`${width ?? "w-full"} ${height ?? "h-full"}`}
                 style={{
@@ -153,7 +157,6 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
                 <Video
                     isLooping
                     ref={videoRef}
-                    
                     resizeMode="cover"
                     source={{ uri: videoUri ?? currentVideo.url }}
                     shouldPlay={isPlaying}
@@ -161,7 +164,7 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
                     style={{
                         width: screenWidth,
                         height: screenHeight - 20,
-                        position: 'absolute',
+                        position: "absolute",
                         top: 40,
                         left: 0,
                         right: 0,
@@ -173,13 +176,11 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
                 />
 
                 <View className="absolute inset-0 justify-between w-full items-center flex-row bottom-1 p-4">
-                    <TouchableOpacity  onPress={togglePlayPause}>
+                    <TouchableOpacity onPress={togglePlayPause}>
                         <MaterialIcons name={isPlaying ? "pause" : "play-arrow"} size={50} color="white" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        onPress={toggleMute}
-                    >
+                    <TouchableOpacity onPress={toggleMute}>
                         <MaterialIcons name={isMuted ? "volume-off" : "volume-up"} size={30} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -200,11 +201,7 @@ export default function AudioVideo({  videoUri, width, height, isPreview, initia
                     </View>
                 )}
             </Animated.View>
-            <CommentsModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                className="z-40"
-            />
+            <CommentsModal visible={modalVisible} onClose={() => setModalVisible(false)} className="z-40" />
         </SafeAreaView>
     );
 }

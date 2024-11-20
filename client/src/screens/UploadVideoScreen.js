@@ -1,14 +1,22 @@
-import RNFS from "react-native-fs";
+import { Video } from "expo-av";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
-import { BackHandler } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { AntDesign, FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView, Text, TextInput, TouchableOpacity, View, Switch, ScrollView, Modal } from "react-native";
 import { watchModeList } from "../shared/video";
-import { Video } from "expo-av";
+import { uploadVideo } from "../redux/actions/video.action";
+import { authSelector } from "../redux/selector";
 
 export default function UploadVideoScreen({ navigation, route }) {
+    const dispatch = useDispatch();
+
+    const auth = useSelector(authSelector);
+    const user = auth.user;
+
     const videoUri = route.params?.videoUri;
+    const thumbnail = route.params?.thumbnail;
+
     const isFocused = useIsFocused();
     const videoRef = useRef(null);
 
@@ -17,11 +25,14 @@ export default function UploadVideoScreen({ navigation, route }) {
     const [hashtagValue, setHashtagValue] = useState("");
     const [hashtagList, setHashtagList] = useState([]);
     const [watchModeIndex, setWatchModeIndex] = useState(0);
-    const [isOpenWatchModeModal, setOpenWatchModeModal] = useState(false);
     const [allowComment, setAllowComment] = useState(true);
     const [shareFacebook, setShareFacebook] = useState(false);
     const [shareTwitter, setShareTwitter] = useState(false);
     const [shareInstagram, setShareInstagram] = useState(false);
+    const [isOpenWatchModeModal, setOpenWatchModeModal] = useState(false);
+
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
 
     const onToggleWatchModeDisplay = () => {
         setOpenWatchModeModal((prev) => !prev);
@@ -63,28 +74,33 @@ export default function UploadVideoScreen({ navigation, route }) {
         }
     };
 
+    const resetData = () => {
+        setTitle("");
+        setDescription("");
+        setHashtagList([]);
+        setWatchModeIndex(0);
+        setAllowComment(true);
+    };
+
     const onUploadVideo = async () => {
         try {
-            if (videoUri) {
-                const formData = new FormData();
-
-                formData.append("upload_preset", "video_sharing_app");
-                formData.append("file", {
-                    name: "SampleVideo.mp4",
-                    uri: `file://${videoUri}`,
-                    type: "video/mp4"
-                });
-
-                fetch("https://api.cloudinary.com/v1_1/dzm0nupxy/upload", {
-                    method: "POST",
-                    body: formData
-                })
-                    .then((res) => {
-                        console.log(res);
+            if (videoUri && user) {
+                await dispatch(
+                    uploadVideo({
+                        videoData: {
+                            title,
+                            description,
+                            user: user._id,
+                            hashtags: hashtagList,
+                            is_private: !!watchModeIndex,
+                            is_comment_allowed: allowComment
+                        },
+                        videoUri,
+                        thumbnail
                     })
-                    .catch((err) => {
-                        throw err;
-                    });
+                );
+                resetData();
+                navigation.navigate("Profile", { trigger: Math.random() });
             }
         } catch (error) {
             throw error;
@@ -163,6 +179,8 @@ export default function UploadVideoScreen({ navigation, route }) {
                             <TextInput
                                 className="bg-gray-200 rounded-md h-12 px-4 py-2"
                                 placeholder="Enter your title"
+                                onChangeText={setTitle}
+                                value={title}
                             />
                         </View>
 
@@ -173,6 +191,8 @@ export default function UploadVideoScreen({ navigation, route }) {
                                 placeholder="Enter your Description"
                                 multiline={true}
                                 numberOfLines={3}
+                                value={description}
+                                onChangeText={setDescription}
                             />
                         </View>
 

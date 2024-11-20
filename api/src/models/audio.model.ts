@@ -31,6 +31,6 @@ const audioSchema = new Schema<AudioDocument>(
     }
 );
 
-const Audio = conn.model<AudioDocument>(COL, audioSchema);
+const Audio = conn.model<AudioDocument>(DOC, audioSchema);
 
 export default Audio;

@@ -3,6 +3,7 @@ import RNFS from "react-native-fs";
 import { Dimensions } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
+import * as VideoThumbnails from "expo-video-thumbnails";
 import { TouchableOpacity, SafeAreaView, Text, View, Image } from "react-native";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Camera as CameraFaceDetector } from "react-native-vision-camera-face-detector";
@@ -131,27 +132,37 @@ export default function CreateVideoScreen({ navigation, route }) {
         })();
     }, []);
 
-    useEffect(() => {
-        if (videoPath && filterPath) {
-            console.log("ok");
+    const generateThumbnail = async (outputVideo) => {
+        try {
+            const { uri } = await VideoThumbnails.getThumbnailAsync(`file://${outputVideo}`, {
+                time: 15000
+            });
+            return uri;
+        } catch (error) {
+            throw error;
+        }
+    };
 
+    useEffect(() => {
+        if (videoPath && filterPath && positions.length > 0) {
             Promise.all([RNFS.exists(videoPath), RNFS.exists(filterPath)]).then((results) => {
-                if (results.every((result) => result)) console.log("ok");
-                applyFilter({
-                    videoPath: videoPath,
-                    filterPath: filterPath,
-                    positions: positions
-                })
-                    .then((outputVideo) => {
-                        setPositions([]);
-                        RNFS.unlink(videoPath).then(() => navigation.navigate("Upload", { videoUri: outputVideo }));
+                if (results.every((result) => result))
+                    applyFilter({
+                        videoPath: videoPath,
+                        filterPath: filterPath,
+                        positions: positions
                     })
-                    .catch((error) => {
-                        throw error;
-                    });
+                        .then(async (outputVideo) => {
+                            setPositions([]);
+                            const thumbnail = await generateThumbnail(outputVideo);
+                            navigation.navigate("Upload", { videoUri: outputVideo, thumbnail });
+                        })
+                        .catch((error) => {
+                            throw error;
+                        });
             });
         }
-    }, [videoPath, filterPath]);
+    }, [videoPath, filterPath, positions.length]);
 
     useEffect(() => {
         (async () => {

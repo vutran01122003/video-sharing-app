@@ -6,16 +6,16 @@ const conn: Connection = database.getConnection();
 const [DOC, COL] = ["comment", "comments"];
 
 export interface CommentDocument extends Document {
-    original_comment_id: CommentDocument["_id"];
+    original_comment: CommentDocument["_id"];
     content: string;
-    userId: UserDocument["_id"];
+    user: UserDocument["_id"];
     reply: CommentDocument["_id"][];
     likes: UserDocument["_id"][];
 }
 
 const commentSchema = new Schema<CommentDocument>(
     {
-        original_comment_id: {
+        original_comment: {
             type: mongoose.Types.ObjectId,
             ref: DOC
         },
@@ -24,9 +24,9 @@ const commentSchema = new Schema<CommentDocument>(
             required: true,
             maxlength: 500
         },
-        userId: {
+        user: {
             type: mongoose.Types.ObjectId,
-            ref: "User",
+            ref: "user",
             required: true
         },
         reply: {
@@ -54,6 +54,6 @@ const commentSchema = new Schema<CommentDocument>(
     }
 );
 
-const Comment = conn.model<CommentDocument>(COL, commentSchema);
+const Comment = conn.model<CommentDocument>(DOC, commentSchema);
 
 export default Comment;
