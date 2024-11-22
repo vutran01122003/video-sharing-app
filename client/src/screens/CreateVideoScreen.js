@@ -62,7 +62,12 @@ export default function CreateVideoScreen({ navigation, route }) {
 
                 cameraRef.current.startRecording({
                     onRecordingError: (error) => console.error(error),
-                    onRecordingFinished: async (video) => setVideoPath(video.path)
+                    onRecordingFinished: async (video) => {
+                        const path = video.path;
+                        const thumbnail = await generateThumbnail(path);
+                        navigation.navigate("Upload", { videoUri: path, thumbnail });
+                        // setVideoPath(video.path);
+                    }
                 });
             }
         } catch (error) {
@@ -143,26 +148,26 @@ export default function CreateVideoScreen({ navigation, route }) {
         }
     };
 
-    useEffect(() => {
-        if (videoPath && filterPath && positions.length > 0) {
-            Promise.all([RNFS.exists(videoPath), RNFS.exists(filterPath)]).then((results) => {
-                if (results.every((result) => result))
-                    applyFilter({
-                        videoPath: videoPath,
-                        filterPath: filterPath,
-                        positions: positions
-                    })
-                        .then(async (outputVideo) => {
-                            setPositions([]);
-                            const thumbnail = await generateThumbnail(outputVideo);
-                            navigation.navigate("Upload", { videoUri: outputVideo, thumbnail });
-                        })
-                        .catch((error) => {
-                            throw error;
-                        });
-            });
-        }
-    }, [videoPath, filterPath, positions.length]);
+    // useEffect(() => {
+    //     if (videoPath && filterPath && positions.length > 0) {
+    //         Promise.all([RNFS.exists(videoPath), RNFS.exists(filterPath)]).then((results) => {
+    //             if (results.every((result) => result))
+    //                 applyFilter({
+    //                     videoPath: videoPath,
+    //                     filterPath: filterPath,
+    //                     positions: positions
+    //                 })
+    //                     .then(async (outputVideo) => {
+    //                         setPositions([]);
+    //                         const thumbnail = await generateThumbnail(outputVideo);
+    //                         navigation.navigate("Upload", { videoUri: outputVideo, thumbnail });
+    //                     })
+    //                     .catch((error) => {
+    //                         throw error;
+    //                     });
+    //         });
+    //     }
+    // }, [videoPath, filterPath, positions.length]);
 
     useEffect(() => {
         (async () => {
@@ -198,7 +203,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                     style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%" }}
                 />
 
-                <View
+                {/* <View
                     onLayout={(event) => {
                         setFilterLayout(event.nativeEvent.layout);
                     }}
@@ -209,7 +214,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                     }}
                 >
                     <Image source={pig_nose_filter} />
-                </View>
+                </View> */}
 
                 <View className="h-full w-full relative">
                     <View className="w-full absolute top-9 left-0 flex-row items-center p-2">

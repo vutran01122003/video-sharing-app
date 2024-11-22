@@ -132,8 +132,8 @@ export default function UploadVideoScreen({ navigation, route }) {
     return (
         <SafeAreaView>
             <ScrollView>
-                <View className="w-full h-full items-center">
-                    <View className="px-5 pt-10 pb-4 border-b-1 border-gray-300 w-full">
+                <View className="w-full h-full items-center bg-white">
+                    <View className="p-5 pb-4 border-b-1 border-gray-300 w-full">
                         <TouchableOpacity onPress={goBack}>
                             <View className="flex-row gap-2 items-center ">
                                 <AntDesign name="left" size={20} color="gray" />
@@ -171,13 +171,12 @@ export default function UploadVideoScreen({ navigation, route }) {
                             />
                         )}
                     </View>
-                    {/* <AudioVideo videoUri={videoUri} width={"w-44"} height={"h-80"} isPreview={true} /> */}
 
                     <View className="w-full p-5 gap-4 items-start">
                         <View className="gap-2 w-full">
-                            <Text>Title</Text>
+                            <Text className="font-semibold text-slate-800 text-base">Title</Text>
                             <TextInput
-                                className="bg-gray-200 rounded-md h-12 px-4 py-2"
+                                className="bg-gray-100 rounded-md h-12 px-4 py-2"
                                 placeholder="Enter your title"
                                 onChangeText={setTitle}
                                 value={title}
@@ -187,7 +186,7 @@ export default function UploadVideoScreen({ navigation, route }) {
                         <View className="gap-2 w-full">
                             <Text className="font-semibold text-slate-800 text-base">Description</Text>
                             <TextInput
-                                className="bg-gray-200 rounded-md px-4 py-2"
+                                className="bg-gray-100 rounded-md px-4 py-2"
                                 placeholder="Enter your Description"
                                 multiline={true}
                                 numberOfLines={3}
@@ -201,7 +200,7 @@ export default function UploadVideoScreen({ navigation, route }) {
                             <View className="w-full relative">
                                 <View>
                                     <TextInput
-                                        className="bg-gray-200 rounded-md h-30 px-4 py-2"
+                                        className="bg-gray-100 rounded-md h-30 px-4 py-2"
                                         placeholder="Enter your hashtag"
                                         value={hashtagValue}
                                         onChangeText={setHashtagValue}

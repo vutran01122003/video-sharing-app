@@ -14,13 +14,15 @@ module.exports = {
             },
             width: {
                 "3/10": "32%"
-                
             },
-            borderWidth:{
-                "1":"1px"
+            borderWidth: {
+                1: "1px"
             },
             borderColor: {
-                main: "#F44B87",
+                main: "#F44B87"
+            },
+            flexBasis: {
+                "3/10": "32%"
             }
         }
     },

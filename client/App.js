@@ -12,7 +12,7 @@ export default function App() {
         <Provider store={store}>
             <NavigationContainer>
                 <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="MainApp" component={TabNavigator} />
+                    <Stack.Screen name="MainApp" component={TabNavigator} options={{ headerShown: false }} />
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

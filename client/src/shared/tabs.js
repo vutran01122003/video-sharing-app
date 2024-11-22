@@ -3,7 +3,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import CreateVideoScreen from "../screens/CreateVideoScreen";
 import SearchScreen from "../screens/SearchScreen";
 import UploadVideoScreen from "../screens/UploadVideoScreen";
-import AudioVideo from "../components/video/AudioVideo";
+import WatchVideoScreen from "../screens/WatchVideoScreen";
 import FollowScreen from "../screens/FollowScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignUp from "../screens/SignUpScreen";
@@ -27,7 +27,7 @@ export const privateTabs = {
     VideoAudio: {
         name: "VideoAudio",
         icon: "video",
-        component: AudioVideo
+        component: WatchVideoScreen
     }
 };
 

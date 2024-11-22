@@ -22,7 +22,6 @@ class VideoController {
     async getAllVideoByUserId(req: Request<UserIdInput, {}, {}>, res: Response, next: NextFunction) {
         try {
             const user_id: string = req.params.user_id;
-
             const videos: VideoDocument[] = await VideoService.findAllVideoByUserId(user_id);
 
             res.status(200).json({

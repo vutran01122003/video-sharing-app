@@ -15,7 +15,7 @@ class VideoService {
 
     static async findAllVideoByUserId(user_id: string): Promise<VideoDocument[]> {
         try {
-            const videos = await Video.find({ user: user_id }).populate("user");
+            const videos = await Video.find({ user: user_id }).sort({ createdAt: -1 }).populate("user");
             return videos;
         } catch (error) {
             throw error;
