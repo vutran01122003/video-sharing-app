@@ -1,0 +1,24 @@
+@url=http://localhost:8000/api
+
+### Create comment
+POST {{url}}/videos/673f0272b4582e1635968bdf/comments
+Content-Type: application/json
+
+{
+    "content": "Cay xanh 123",
+    "user": "673da3e4bdfffaf08d4d89b8"
+}
+
+### Get comments by video
+GET {{url}}/videos/673f0272b4582e1635968bdf/comments
+
+### Update comment by id
+PATCH {{url}}/videos/673f0272b4582e1635968bdf/comments/6740ac65ee3ae131ee948eff
+Content-Type: application/json
+
+{
+    "content": "kkk 123"
+}
+
+### Delete comment by id
+DELETE {{url}}/videos/673f0272b4582e1635968bdf/comments/6740acf7cef62604b6fc6fbc

@@ -1,5 +1,6 @@
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError, verify } from "jsonwebtoken";
 import fs from "fs";
+import { VerifyInput } from "../shared";
 
 class AuthService {
     static async signToken(userId: string): Promise<string> {
@@ -8,16 +9,10 @@ class AuthService {
                 encoding: "utf-8"
             });
 
-            const token: string = await jwt.sign(
-                {
-                    _id: userId
-                },
-                privateKey,
-                {
-                    algorithm: "RS512",
-                    expiresIn: "2h"
-                }
-            );
+            const token: string = await jwt.sign(userId, privateKey, {
+                algorithm: "RS512",
+                expiresIn: "2h"
+            });
 
             return token;
         } catch (error) {
@@ -25,17 +20,31 @@ class AuthService {
         }
     }
 
-    static async verifyToken(token: string) {
-        try {
-            const privateKey: string = fs.readFileSync(__dirname + "../../../keys/publickey.crt", {
-                encoding: "utf-8"
-            });
-            const decode = await jwt.verify(token, privateKey);
+    static async verifyToken(token: string): Promise<VerifyInput> {
+        return new Promise((resolve, reject) => {
+            try {
+                const privateKey: string = fs.readFileSync(__dirname + "../../../keys/publickey.crt", {
+                    encoding: "utf-8"
+                });
 
-            return decode;
-        } catch (error) {
-            throw error;
-        }
+                jwt.verify(token, privateKey, (err, userId): void => {
+                    if (err)
+                        resolve({
+                            isExpired: err instanceof TokenExpiredError,
+                            error: err,
+                            userId: undefined
+                        });
+
+                    resolve({
+                        isExpired: false,
+                        error: undefined,
+                        userId: userId as string
+                    });
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 }
 

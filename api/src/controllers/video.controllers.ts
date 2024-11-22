@@ -3,6 +3,8 @@ import { UpdateVideoInput, UploadVideoInput } from "../schema/video.schema";
 import VideoService from "../services/video.service";
 import { VideoDocument } from "../models/video.model";
 import { UserIdInput, VideoIdInput } from "../schema";
+import { CommentDocument } from "../models/comment.model";
+import { CommentIdListInput, CommentInput, UpdateCommentInput } from "../schema/comment.schema";
 
 class VideoController {
     async uploadVideo(req: Request<{}, {}, UploadVideoInput>, res: Response, next: NextFunction) {
@@ -50,6 +52,7 @@ class VideoController {
 
     async updateVideoById(req: Request<VideoIdInput, {}, UpdateVideoInput>, res: Response, next: NextFunction) {
         try {
+            console.log(res.locals.userData);
             const video_id: string = req.params.video_id;
             const updatedVideoData: UpdateVideoInput = req.body;
 
@@ -73,6 +76,69 @@ class VideoController {
             res.status(200).json({
                 message: "Delete video successfully"
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async createComment(req: Request<VideoIdInput, {}, CommentInput>, res: Response, next: NextFunction) {
+        try {
+            const video_id: string = req.params.video_id;
+            const commentData: CommentInput = req.body;
+
+            const comment: CommentDocument = await VideoService.createComment(video_id, commentData);
+
+            res.status(201).json({ message: "Comment on video successfully", data: comment });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getComments(req: Request<VideoIdInput, {}, {}>, res: Response, next: NextFunction) {
+        try {
+            const video_id: string = req.params.video_id;
+
+            const comments: CommentDocument[] = await VideoService.getComments(video_id);
+
+            res.status(200).json({ message: "Get Comments successfully", data: comments });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateCommentById(
+        req: Request<CommentIdListInput, {}, UpdateCommentInput>,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const comment_id: string = req.params.comment_id;
+            const updatedCommentData: UpdateCommentInput = req.body;
+
+            const updatedComment: CommentDocument = await VideoService.updateCommentById(
+                comment_id,
+                updatedCommentData
+            );
+
+            res.status(200).json({
+                message: "Update comment successfully",
+                data: updatedComment
+            });
+        } catch (error) {
+            console.log(error);
+
+            next(error);
+        }
+    }
+
+    async deleteCommentById(req: Request<CommentIdListInput, {}, {}>, res: Response, next: NextFunction) {
+        try {
+            const comment_id: string = req.params.comment_id;
+            const video_id: string = req.params.video_id;
+
+            await VideoService.deleteCommentById(comment_id, video_id);
+
+            res.status(200).json({ message: "Delete comment successfully" });
         } catch (error) {
             next(error);
         }

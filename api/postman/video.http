@@ -19,8 +19,9 @@ GET {{url}}/users/6739fc7620630489bd285dd3/videos
 GET {{url}}/videos/673c95a008500cc926a2c0ad
 
 ### Update video by id
-PATCH {{url}}/videos/673c95a008500cc926a2c0ad
+PATCH {{url}}/videos/673f0272b4582e1635968bdf
 Content-Type: application/json
+x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzNkYTNlNGJkZmZmYWYwOGQ0ZDg5YjgiLCJpYXQiOjE3MzIyOTc2NzEsImV4cCI6MTczMjMwNDg3MX0.UawdHScilmk5Rhgk9doIne0bccHkvppLrcLa1_0Zh7u_fnFSmNa7sBvY9bWU_o0qXU5l6IgFbg9xgVmUVOGnoYBN69gYVGHRGl_-NuP7qmgjBDoV_O_7_hv8Em6cGvS4_a5I5IFyQV0ba6Z4JMA_fXYLA6gfgVaboV4JgQwMPVineRM6yMHKjEWkUsxD_x-twG13wZTxuDuFt2LgL39F-12YCUMkkPxXm6s2KpglEwzSVskUQQKbPyh4opTCi_rWurQip5TYA93E0CGGi5OQAU_l2JaNZ9DWeHM_Pfa5G5tCV_J2X4U39fWEaoOOQVNWHkDWbbBNbjJ6yEbZa-9riw
 
 {
     "title": "AAAA",

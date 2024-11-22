@@ -40,6 +40,20 @@ export const audioIdSchema = z.object({
         })
 });
 
+export const commentIdSchema = z.object({
+    params: z
+        .object({
+            comment_id: z.string({
+                required_error: "comment_id is required"
+            })
+        })
+        .refine((data) => isValidObjectId(data.comment_id), {
+            path: ["comment_id"],
+            message: "Invalid comment_id"
+        })
+});
+
 export type UserIdInput = TypeOf<typeof userIdSchema>["params"];
 export type VideoIdInput = TypeOf<typeof videoIdSchema>["params"];
 export type AudioIdInput = TypeOf<typeof audioIdSchema>["params"];
+export type CommentIdInput = TypeOf<typeof commentIdSchema>["params"];

@@ -1,6 +1,9 @@
 import createHttpError from "http-errors";
 import Video, { VideoDocument } from "../models/video.model";
 import { UpdateVideoInput, UploadVideoInput } from "../schema/video.schema";
+import Comment, { CommentDocument } from "../models/comment.model";
+import { CommentInput, UpdateCommentInput } from "../schema/comment.schema";
+import User from "../models/user.model";
 
 class VideoService {
     static async uploadVideo(videoUploadData: UploadVideoInput): Promise<VideoDocument> {
@@ -52,6 +55,60 @@ class VideoService {
         try {
             const result = await Video.findByIdAndDelete(video_id);
             if (!result) throw createHttpError.NotFound("Video doesn't exist");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async createComment(video_id: string, commentData: CommentInput): Promise<CommentDocument> {
+        try {
+            const [video, user] = await Promise.all([Video.findById(video_id), User.findById(commentData.user)]);
+
+            if (!video || !user) throw createHttpError.NotFound("Video doesn't exist");
+
+            const comment: CommentDocument = await Comment.create({
+                video: video_id,
+                ...commentData
+            });
+
+            return comment.toObject();
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async getComments(video_id: string): Promise<CommentDocument[]> {
+        try {
+            const comments = Comment.find({ video: video_id }).populate("user", "user_name avatar");
+            return comments;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async updateCommentById(comment_id: string, commentData: UpdateCommentInput): Promise<CommentDocument> {
+        try {
+            const comment: CommentDocument | null = await Comment.findByIdAndUpdate(comment_id, commentData, {
+                new: true
+            });
+
+            if (!comment) throw createHttpError.NotFound("Commnet doesn't exist");
+
+            const populatedComment = await comment.populate("user", "user_name avatar");
+
+            return populatedComment;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async deleteCommentById(comment_id: string, video_id: string): Promise<void> {
+        try {
+            const video = await Video.findById(video_id);
+            if (!video) throw createHttpError.NotFound("Video doesn't exist");
+
+            const result = await Comment.findByIdAndDelete(comment_id);
+            if (!result) throw createHttpError.NotFound("Comment doesn't exist");
         } catch (error) {
             throw error;
         }

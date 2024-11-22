@@ -1,11 +1,13 @@
 import mongoose, { Connection, Schema, Document } from "mongoose";
 import database from "../dbs/database.connection";
 import { UserDocument } from "./user.model";
+import { VideoDocument } from "./video.model";
 
 const conn: Connection = database.getConnection();
 const [DOC, COL] = ["comment", "comments"];
 
 export interface CommentDocument extends Document {
+    video: VideoDocument["_id"];
     original_comment: CommentDocument["_id"];
     content: string;
     user: UserDocument["_id"];
@@ -15,6 +17,11 @@ export interface CommentDocument extends Document {
 
 const commentSchema = new Schema<CommentDocument>(
     {
+        video: {
+            type: mongoose.Types.ObjectId,
+            ref: "video",
+            required: true
+        },
         original_comment: {
             type: mongoose.Types.ObjectId,
             ref: DOC
