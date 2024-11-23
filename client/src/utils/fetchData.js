@@ -10,8 +10,8 @@ export const getDataApi = (url, params) => {
     return res;
 };
 
-export const putDataApi = (url, data) => {
-    const res = instance.put(url, data);
+export const patchDataApi = (url, data) => {
+    const res = instance.patch(url, data);
     return res;
 };
 

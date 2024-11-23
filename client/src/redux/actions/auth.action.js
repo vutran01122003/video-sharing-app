@@ -11,7 +11,7 @@ export const register =
             dispatch({
                 type: GLOBAL_TYPES.ALERT,
                 payload: {
-                    success: "Register successfully"
+                    success: "Register successful"
                 }
             });
             navigation.navigate("Login");
@@ -20,7 +20,7 @@ export const register =
             dispatch({
                 type: GLOBAL_TYPES.ALERT,
                 payload: {
-                    error: error.response?.data?.msg || "Register unsuccessfully"
+                    error: error.response?.data?.msg || "Register failed"
                 }
             });
         }
@@ -44,7 +44,7 @@ export const login = (loginData) => async (dispatch) => {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
             payload: {
-                success: "Login successfully"
+                success: "Login successful"
             }
         });
     } catch (error) {
@@ -52,7 +52,7 @@ export const login = (loginData) => async (dispatch) => {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
             payload: {
-                error: error.response?.data?.msg || "Login unsuccessfully"
+                error: error.response?.data?.msg || "Login failed"
             }
         });
     }

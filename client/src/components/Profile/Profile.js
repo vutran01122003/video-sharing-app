@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+import { Text, View, SafeAreaView, Image, TouchableOpacity, ScrollView } from "react-native";
 import { useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
-import { Text, View, SafeAreaView, Image, TouchableOpacity, ScrollView } from "react-native";
 import VideoCard from "../video/VideoCard";
 import { authSelector, videoSelector } from "../../redux/selector";
 
@@ -123,7 +123,5 @@ export default function Profile() {
                 </ScrollView>
             </View>
         </SafeAreaView>
-    ) : (
-        <View />
-    );
+    ) : null;
 }

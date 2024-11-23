@@ -2,16 +2,7 @@ import { Video } from "expo-av";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import {
-    View,
-    TouchableOpacity,
-    Animated,
-    SafeAreaView,
-    Dimensions,
-    ScrollView,
-    BackHandler,
-    Alert
-} from "react-native";
+import { View, TouchableOpacity, Animated, SafeAreaView, Dimensions, ScrollView, BackHandler } from "react-native";
 import CommentsModal from "../components/modal/ModalComment";
 
 export default function WatchingScreen({ navigation, route }) {
@@ -126,7 +117,7 @@ export default function WatchingScreen({ navigation, route }) {
                                     </TouchableOpacity>
                                 </View>
 
-                                <View className="absolute justify-between w-full items-center flex-row bottom-1 px-6 pb-4">
+                                <View className="absolute justify-between w-full items-center flex-row bottom-12 px-6">
                                     <TouchableOpacity onPress={() => togglePlayPause(video._id)}>
                                         <MaterialIcons
                                             name={isPlaying ? "pause" : "play-arrow"}
@@ -144,11 +135,14 @@ export default function WatchingScreen({ navigation, route }) {
                                     </TouchableOpacity>
                                 </View>
 
-                                <CommentsModal
-                                    visible={modalVisible}
-                                    onClose={() => setModalVisible(false)}
-                                    className="z-40"
-                                />
+                                {modalVisible && currentIndex === index && (
+                                    <CommentsModal
+                                        visible={modalVisible}
+                                        onClose={() => setModalVisible(false)}
+                                        className="z-40"
+                                        video_id={video._id}
+                                    />
+                                )}
                             </View>
                         ))}
                 </View>

@@ -1,6 +1,6 @@
-import jwt, { TokenExpiredError, verify } from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError, verify } from "jsonwebtoken";
 import fs from "fs";
-import { VerifyInput } from "../shared";
+import { TokenPayload, VerifyTokenResult } from "../shared";
 
 class AuthService {
     static async signToken(userId: string): Promise<string> {
@@ -9,7 +9,7 @@ class AuthService {
                 encoding: "utf-8"
             });
 
-            const token: string = await jwt.sign(userId, privateKey, {
+            const token: string = await jwt.sign({ userId }, privateKey, {
                 algorithm: "RS512",
                 expiresIn: "2h"
             });
@@ -20,25 +20,25 @@ class AuthService {
         }
     }
 
-    static async verifyToken(token: string): Promise<VerifyInput> {
+    static async verifyToken(token: string): Promise<VerifyTokenResult> {
         return new Promise((resolve, reject) => {
             try {
                 const privateKey: string = fs.readFileSync(__dirname + "../../../keys/publickey.crt", {
                     encoding: "utf-8"
                 });
 
-                jwt.verify(token, privateKey, (err, userId): void => {
+                jwt.verify(token, privateKey, (err, data): void => {
                     if (err)
                         resolve({
                             isExpired: err instanceof TokenExpiredError,
                             error: err,
-                            userId: undefined
+                            data: undefined
                         });
 
                     resolve({
                         isExpired: false,
                         error: undefined,
-                        userId: userId as string
+                        data: data as TokenPayload
                     });
                 });
             } catch (error) {

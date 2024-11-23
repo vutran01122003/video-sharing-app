@@ -71,7 +71,9 @@ class VideoService {
                 ...commentData
             });
 
-            return comment.toObject();
+            const populatedComment = await comment.populate("user", "avatar user_name");
+
+            return populatedComment.toObject();
         } catch (error) {
             throw error;
         }
@@ -79,7 +81,11 @@ class VideoService {
 
     static async getComments(video_id: string): Promise<CommentDocument[]> {
         try {
-            const comments = Comment.find({ video: video_id }).populate("user", "user_name avatar");
+            const comments = Comment.find({ video: video_id }).populate({
+                path: "user",
+                model: "user",
+                select: "user_name avatar"
+            });
             return comments;
         } catch (error) {
             throw error;

@@ -1,9 +1,9 @@
-import { getDataApi, postDataApi } from "../../utils/fetchData";
+import { deleteDataApi, getDataApi, patchDataApi, postDataApi } from "../../utils/fetchData";
 import { uploadCacheFileToCloudinary } from "../../utils/uploadFile";
 import GLOBAL_TYPES from "./globalTypes";
 
 export const uploadVideo =
-    ({ videoData, videoUri, thumbnail, navigation }) =>
+    ({ videoData, videoUri, thumbnail }) =>
     async (dispatch) => {
         try {
             const responses = await Promise.all([
@@ -30,14 +30,14 @@ export const uploadVideo =
             dispatch({
                 type: GLOBAL_TYPES.ALERT,
                 payload: {
-                    success: res.data.message || "Upload video successfully"
+                    success: res.data.message || "Upload video successful"
                 }
             });
         } catch (error) {
             dispatch({
                 type: GLOBAL_TYPES.ALERT,
                 payload: {
-                    error: error.response?.data?.message || "Upload video unsuccessfully"
+                    error: error.response?.data?.message || "Upload video failed"
                 }
             });
         }
@@ -57,14 +57,125 @@ export const getVideoByUserId = (userId) => async (dispatch) => {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
             payload: {
-                success: res.data.message || "Get videos successfully"
+                success: res.data.message || "Get videos successful"
             }
         });
     } catch (error) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
             payload: {
-                error: error.response?.data?.message || "Get videos unsuccessfully"
+                error: error.response?.data?.message || "Get videos failed"
+            }
+        });
+    }
+};
+
+export const createComment = (video_id, commentData) => async (dispatch) => {
+    try {
+        const res = await postDataApi(`/videos/${video_id}/comments`, commentData);
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.CREATE_COMMENT,
+            payload: {
+                video_id,
+                commentData: res.data.data
+            }
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data.message || "Comment successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Comment failed"
+            }
+        });
+    }
+};
+
+export const getComments = (video_id) => async (dispatch) => {
+    try {
+        const res = await getDataApi(`videos/${video_id}/comments`);
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.GET_COMMENTS,
+            payload: {
+                video_id,
+                comments: res.data.data
+            }
+        });
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data?.message || "Get comment successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: error.response?.data?.message || "Get comments failed"
+        });
+    }
+};
+
+export const updateComment = (video_id, comment_id, content) => async (dispatch) => {
+    try {
+        const res = await patchDataApi(`/videos/${video_id}/comments/${comment_id}`, {
+            content
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.UPDATE_COMMENT,
+            payload: {
+                video_id,
+                comment: res.data.data
+            }
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data.message || "Update comment successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Update comment failed"
+            }
+        });
+    }
+};
+
+export const deleteComment = (video_id, comment_id) => async (dispatch) => {
+    try {
+        const res = await deleteDataApi(`/videos/${video_id}/comments/${comment_id}`);
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.DELETE_COMMENT,
+            payload: {
+                video_id,
+                comment_id
+            }
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data.message || "Delete comment successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Delete comment failed"
             }
         });
     }

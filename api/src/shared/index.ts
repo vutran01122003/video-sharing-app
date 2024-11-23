@@ -1,7 +1,9 @@
-import { JwtPayload } from "jsonwebtoken";
+export interface TokenPayload {
+    userId: string;
+}
 
-export interface VerifyInput {
+export interface VerifyTokenResult {
     error: Error | undefined;
-    userId: string | undefined;
     isExpired: boolean;
+    data: TokenPayload | undefined;
 }

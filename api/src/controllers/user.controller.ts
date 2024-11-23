@@ -29,9 +29,7 @@ class UserController {
             const password: string = loginData.password;
             const user_name: string = loginData.user_name;
 
-            const user: UserDocument | null = await UserService.getUserByUserName(user_name);
-
-            if (!user) throw createError.NotFound("User doesn't exist");
+            const user: UserDocument = await UserService.getUserByUserName(user_name);
 
             const isValidPassword = await user.comparePassword(password);
             if (!isValidPassword) throw createError.Unauthorized("Incorrect password");

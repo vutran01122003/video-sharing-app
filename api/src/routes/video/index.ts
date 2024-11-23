@@ -31,6 +31,7 @@ router.patch(
     validateResource(updateVideoSchema),
     videoControllers.updateVideoById
 );
+
 router.patch(
     "/videos/:video_id/comments/:comment_id",
     verifyToken,

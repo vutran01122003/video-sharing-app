@@ -15,9 +15,12 @@ class UserService {
         }
     }
 
-    static async getUserByUserName(user_name: string): Promise<UserDocument | null> {
+    static async getUserByUserName(user_name: string): Promise<UserDocument> {
         try {
-            const user = await User.findOne({ user_name }).select("-password");
+            const user = await User.findOne({ user_name });
+
+            if (!user) throw createHttpError.NotFound("User does not exist");
+
             return user;
         } catch (error) {
             throw error;
