@@ -1,6 +1,6 @@
 import { z, TypeOf } from "zod";
 
-export const uploadVideoSchema = z.object({
+export const uploadedVideoSchema = z.object({
     body: z.object({
         thumbnail: z.string().optional(),
         audio_id: z.string().optional(),
@@ -16,7 +16,7 @@ export const uploadVideoSchema = z.object({
     })
 });
 
-export const updateVideoSchema = z.object({
+export const updatedVideoSchema = z.object({
     body: z.object({
         title: z.string().max(500, "Title shoudle be max 500 characters").optional(),
         description: z.string().max(500, "Description shoudle be max 500 characters").optional(),
@@ -26,5 +26,5 @@ export const updateVideoSchema = z.object({
     })
 });
 
-export type UpdateVideoInput = TypeOf<typeof updateVideoSchema>["body"];
-export type UploadVideoInput = TypeOf<typeof uploadVideoSchema>["body"];
+export type UpdateVideoInput = TypeOf<typeof updatedVideoSchema>["body"];
+export type UploadVideoInput = TypeOf<typeof uploadedVideoSchema>["body"];

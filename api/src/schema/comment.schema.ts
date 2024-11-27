@@ -18,7 +18,7 @@ export const commentSchema = z.object({
     })
 });
 
-export const updateCommentSchema = z.object({
+export const updatedCommentSchema = z.object({
     body: z.object({
         content: z.string({ required_error: "Content is required" }).max(500, "Content should be max 500 characters")
     })
@@ -37,5 +37,5 @@ export const commentIdListSchema = z.object({
 });
 
 export type CommentInput = TypeOf<typeof commentSchema>["body"];
-export type UpdateCommentInput = TypeOf<typeof updateCommentSchema>["body"];
+export type UpdateCommentInput = TypeOf<typeof updatedCommentSchema>["body"];
 export type CommentIdListInput = TypeOf<typeof commentIdListSchema>["params"];

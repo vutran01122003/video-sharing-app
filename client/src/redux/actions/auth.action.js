@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { postDataApi } from "../../utils/fetchData";
+import { getDataApi, postDataApi } from "../../utils/fetchData";
 import GLOBAL_TYPES from "./globalTypes";
 
 export const register =
@@ -58,7 +58,20 @@ export const login = (loginData) => async (dispatch) => {
     }
 };
 
-export const verifyToken = (token) => (dispatch) => {
+export const verifyToken = () => async (dispatch) => {
     try {
-    } catch (error) {}
+        const res = await getDataApi("/users/verify-token");
+
+        dispatch({
+            type: GLOBAL_TYPES.AUTH.VERIFY_TOKEN,
+            payload: { user: res.data.data }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.msg || "Login again"
+            }
+        });
+    }
 };

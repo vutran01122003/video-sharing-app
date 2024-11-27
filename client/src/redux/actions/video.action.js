@@ -30,7 +30,7 @@ export const uploadVideo =
             dispatch({
                 type: GLOBAL_TYPES.ALERT,
                 payload: {
-                    success: res.data.message || "Upload video successful"
+                    success: res.data?.message || "Upload video successful"
                 }
             });
         } catch (error) {
@@ -57,7 +57,7 @@ export const getVideoByUserId = (userId) => async (dispatch) => {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
             payload: {
-                success: res.data.message || "Get videos successful"
+                success: res.data?.message || "Get videos successful"
             }
         });
     } catch (error) {
@@ -65,6 +65,62 @@ export const getVideoByUserId = (userId) => async (dispatch) => {
             type: GLOBAL_TYPES.ALERT,
             payload: {
                 error: error.response?.data?.message || "Get videos failed"
+            }
+        });
+    }
+};
+
+export const likeVideo = (video_id, videoType) => async (dispatch) => {
+    try {
+        const res = await postDataApi(`/videos/${video_id}/like`);
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.LIKE_VIDEO,
+            payload: {
+                video: res.data.data,
+                videoType
+            }
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data?.message || "Like video successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Like video failed"
+            }
+        });
+    }
+};
+
+export const unlikeVideo = (video_id, videoType) => async (dispatch) => {
+    try {
+        const res = await postDataApi(`/videos/${video_id}/unlike`);
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.UNLIKE_VIDEO,
+            payload: {
+                video: res.data.data,
+                videoType
+            }
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data?.message || "Unlike video successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Unlike video failed"
             }
         });
     }

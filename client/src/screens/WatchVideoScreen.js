@@ -2,11 +2,29 @@ import { Video } from "expo-av";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import { View, TouchableOpacity, Animated, SafeAreaView, Dimensions, ScrollView, BackHandler } from "react-native";
-import CommentsModal from "../components/modal/ModalComment";
+import {
+    View,
+    TouchableOpacity,
+    Animated,
+    SafeAreaView,
+    Dimensions,
+    ScrollView,
+    BackHandler,
+    Text
+} from "react-native";
+import CommentModal from "../components/modal/CommentModal";
+import { useDispatch, useSelector } from "react-redux";
+import { videoSelector } from "../redux/selector";
+import { likeVideo, unlikeVideo } from "../redux/actions/video.action";
+import millify from "millify";
+import Avatar from "../components/user/Avatar";
+import moment from "moment";
 
 export default function WatchingScreen({ navigation, route }) {
-    const { videos, indexVideo, screen } = route.params;
+    const dispatch = useDispatch();
+
+    const video = useSelector(videoSelector);
+    const { user, videoType, indexVideo, screen } = route.params;
     const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
     const scrollRef = useRef();
@@ -46,6 +64,14 @@ export default function WatchingScreen({ navigation, route }) {
         });
     };
 
+    const handleLikeVideo = (video_id) => {
+        dispatch(likeVideo(video_id, videoType));
+    };
+
+    const handleUnlikeVideo = (video_id) => {
+        dispatch(unlikeVideo(video_id, videoType));
+    };
+
     useEffect(() => {
         const backAction = () => {
             navigation.navigate(screen);
@@ -72,7 +98,7 @@ export default function WatchingScreen({ navigation, route }) {
             });
     }, [scrollRef.current, isFocus, indexVideo]);
 
-    return (
+    return video[videoType] ? (
         <SafeAreaView className="h-full w-full relative">
             <TouchableOpacity onPress={() => navigation.navigate(screen)}>
                 <View className="absolute top-2 left-2 w-9 h-9">
@@ -88,8 +114,8 @@ export default function WatchingScreen({ navigation, route }) {
                 style={{ position: "absolute", zIndex: -1, top: 0, left: 0, width: "100%", height: "100%" }}
             >
                 <View className="h-full w-full">
-                    {videos.length > 0 &&
-                        videos.map((video, index) => (
+                    {video[videoType].length > 0 &&
+                        video[videoType].map((video, index) => (
                             <View style={{ height: screenHeight, width: screenWidth }} key={video._id}>
                                 <Video
                                     ref={index === currentIndex ? videoRef : null}
@@ -103,10 +129,35 @@ export default function WatchingScreen({ navigation, route }) {
                                     }}
                                 />
 
-                                <View className="absolute right-4 bottom-1/3 items-center gap-12">
-                                    <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
-                                        <MaterialIcons name="favorite" size={35} color="white" />
-                                    </TouchableOpacity>
+                                <View className="absolute right-4 bottom-1/3 items-center gap-8">
+                                    {video.user?.avatar && (
+                                        <Avatar
+                                            image={video.user.avatar}
+                                            isVideo={
+                                                video.user._id !== user._id && !user.following.includes(video.user._id)
+                                            }
+                                        />
+                                    )}
+
+                                    <View className="items-center">
+                                        <TouchableOpacity
+                                            className="my-2.5 p-2.5 bg-black/50 rounded-full"
+                                            onPress={() => {
+                                                video.likes.includes(user._id)
+                                                    ? handleUnlikeVideo(video._id)
+                                                    : handleLikeVideo(video._id);
+                                            }}
+                                        >
+                                            <MaterialIcons
+                                                name="favorite"
+                                                size={35}
+                                                color={video.likes.includes(user._id) ? "#F44B87" : "white"}
+                                            />
+                                        </TouchableOpacity>
+                                        <Text className="text-white font-semibold">
+                                            {video.likes.length > 0 && millify(video.likes.length)}
+                                        </Text>
+                                    </View>
 
                                     <TouchableOpacity onPress={() => setModalVisible(true)}>
                                         <MaterialIcons name="chat" size={35} color="white" />
@@ -117,26 +168,43 @@ export default function WatchingScreen({ navigation, route }) {
                                     </TouchableOpacity>
                                 </View>
 
-                                <View className="absolute justify-between w-full items-center flex-row bottom-12 px-6">
-                                    <TouchableOpacity onPress={() => togglePlayPause(video._id)}>
-                                        <MaterialIcons
-                                            name={isPlaying ? "pause" : "play-arrow"}
-                                            size={40}
-                                            color="white"
-                                        />
-                                    </TouchableOpacity>
+                                <View className="absolute w-full bottom-1 px-4 gap-4">
+                                    <View className="flex-row">
+                                        <View className="gap-1">
+                                            <View className="flex-row gap-2 items-center">
+                                                <Text className="text-white font-bold text-lg">
+                                                    @{video.user.user_name}
+                                                </Text>
+                                                <Text className="text-white">{moment(video.createdAt).fromNow()}</Text>
+                                            </View>
 
-                                    <TouchableOpacity onPress={toggleMute}>
-                                        <MaterialIcons
-                                            name={isMuted ? "volume-off" : "volume-up"}
-                                            size={35}
-                                            color="white"
-                                        />
-                                    </TouchableOpacity>
+                                            <Text className="text-white font-semibold">{`${video.title} ${video.hashtags
+                                                .map((hashtag) => `#${hashtag}`)
+                                                .join(" ")}`}</Text>
+                                        </View>
+                                    </View>
+
+                                    <View className="justify-between w-full items-center flex-row">
+                                        <TouchableOpacity onPress={() => togglePlayPause(video._id)}>
+                                            <MaterialIcons
+                                                name={isPlaying ? "pause" : "play-arrow"}
+                                                size={40}
+                                                color="white"
+                                            />
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity onPress={toggleMute}>
+                                            <MaterialIcons
+                                                name={isMuted ? "volume-off" : "volume-up"}
+                                                size={35}
+                                                color="white"
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
 
                                 {modalVisible && currentIndex === index && (
-                                    <CommentsModal
+                                    <CommentModal
                                         visible={modalVisible}
                                         onClose={() => setModalVisible(false)}
                                         className="z-40"
@@ -148,5 +216,5 @@ export default function WatchingScreen({ navigation, route }) {
                 </View>
             </ScrollView>
         </SafeAreaView>
-    );
+    ) : null;
 }

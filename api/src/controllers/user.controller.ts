@@ -1,10 +1,9 @@
 import { omit } from "lodash";
 import createError from "http-errors";
 import { type Request, type Response, type NextFunction } from "express";
-import { UserInput } from "../schema/createUser.schema";
+import { LoginInput, UserInput } from "../schema/user.schema";
 import { UserDocument } from "../models/user.model";
 import UserService from "../services/user.service";
-import { LoginInput } from "../schema/loginUser.schema";
 import AuthService from "../services/auth.service";
 
 class UserController {
@@ -17,6 +16,17 @@ class UserController {
             res.status(200).json({
                 message: "Create user successfully",
                 data: omit(createdUser, "password")
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getUserInfo(req: Request, res: Response, next: NextFunction) {
+        try {
+            res.status(200).json({
+                message: "Get user data successful",
+                data: res.locals.userData
             });
         } catch (error) {
             next(error);

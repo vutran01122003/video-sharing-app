@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import User, { UserDocument } from "../models/user.model";
-import { UserInput } from "../schema/createUser.schema";
+import { UserInput } from "../schema/user.schema";
 import bcrypt from "bcrypt";
 
 class UserService {
@@ -17,7 +17,18 @@ class UserService {
 
     static async getUserByUserName(user_name: string): Promise<UserDocument> {
         try {
-            const user = await User.findOne({ user_name });
+            const user = await User.findOne({ user_name }).populate([
+                {
+                    path: "followers",
+                    model: "user",
+                    select: "avatar user_name"
+                },
+                {
+                    path: "following",
+                    model: "user",
+                    select: "avatar user_name"
+                }
+            ]);
 
             if (!user) throw createHttpError.NotFound("User does not exist");
 
@@ -29,7 +40,20 @@ class UserService {
 
     static async getUserById(user_id: string): Promise<UserDocument> {
         try {
-            const user = await User.findById(user_id).select("-password");
+            const user = await User.findById(user_id)
+                .populate([
+                    {
+                        path: "followers",
+                        model: "user",
+                        select: "avatar user_name"
+                    },
+                    {
+                        path: "following",
+                        model: "user",
+                        select: "avatar user_name"
+                    }
+                ])
+                .select("-password");
 
             if (!user) throw createHttpError.NotFound("User does not exist");
 

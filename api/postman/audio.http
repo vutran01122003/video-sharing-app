@@ -1,0 +1,17 @@
+@url=http://localhost:8000/api
+
+### Create audio
+POST {{url}}/audios
+Content-Type: application/json
+x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzNkYTNlNGJkZmZmYWYwOGQ0ZDg5YjgiLCJpYXQiOjE3MzI3MTczNjMsImV4cCI6MTczMjcyNDU2M30.YACwglw4Mnhr2_c5ZOxq2HVO63C6cLY30Kj2BHh-lKOnZH2S4V8Ug26d6QTQPIvH74Agyc5DCMZ3Oyb6fG1cu0YGRy9Kw7f2ESjsYGoSAjUjJhWXXLlDEpJvwxx7REJ0hvtLd-X3hPWmlssFFAxPllsFmjVjfhDpCqMq9ECmJmIHRxy4DRosnScg3tnhvxboqlkAzV_F8Oz7LaQ_E_abbsCElRxjZ1m6WjMsfXq3icTsZYh3BH73gk4w8A-RRmA0y8i11GleP_6Gc3EHFdVgb3-ZMzEjkhYcJ_sPOT556e1VEHPjpi259uaTq8ofIWqitxN-RzqUKVVmE5QiCXLlAQ
+
+{
+    "title": "Nơi vực trời",
+    "duration": 58,
+    "thumbnail": "https://res.cloudinary.com/dzm0nupxy/image/upload/v1732717020/video_sharing_app/thumbnails/cuu6lip3y59l85pfltsr.png",
+    "audio_url": "https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/NoiVucTroi"
+}
+
+### Get audio
+GET {{url}}/audios
+x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzNkYTNlNGJkZmZmYWYwOGQ0ZDg5YjgiLCJpYXQiOjE3MzI3MTczNjMsImV4cCI6MTczMjcyNDU2M30.YACwglw4Mnhr2_c5ZOxq2HVO63C6cLY30Kj2BHh-lKOnZH2S4V8Ug26d6QTQPIvH74Agyc5DCMZ3Oyb6fG1cu0YGRy9Kw7f2ESjsYGoSAjUjJhWXXLlDEpJvwxx7REJ0hvtLd-X3hPWmlssFFAxPllsFmjVjfhDpCqMq9ECmJmIHRxy4DRosnScg3tnhvxboqlkAzV_F8Oz7LaQ_E_abbsCElRxjZ1m6WjMsfXq3icTsZYh3BH73gk4w8A-RRmA0y8i11GleP_6Gc3EHFdVgb3-ZMzEjkhYcJ_sPOT556e1VEHPjpi259uaTq8ofIWqitxN-RzqUKVVmE5QiCXLlAQ

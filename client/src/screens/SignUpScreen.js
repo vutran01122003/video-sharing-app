@@ -14,6 +14,7 @@ import {
     TouchableOpacity
 } from "react-native";
 import { register } from "../redux/actions/auth.action";
+import RegisterLogo from "../../assets/images/logo/tiktok_logo.png";
 
 export default function SignUp({ navigation }) {
     const dispatch = useDispatch();
@@ -87,7 +88,7 @@ export default function SignUp({ navigation }) {
                     </Pressable>
 
                     <View style={{ alignItems: "center", marginBottom: 30 }}>
-                        <Image source={require("../../assets/tiktoklogo.png")} style={{ width: 150, height: 150 }} />
+                        <Image source={RegisterLogo} style={{ width: 150, height: 150 }} />
                         <Text style={styles.titleText}>Nice to see you!</Text>
                         <Text style={styles.subtitleText}>Create your account</Text>
                     </View>

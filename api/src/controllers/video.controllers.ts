@@ -81,6 +81,38 @@ class VideoController {
         }
     }
 
+    async likeVideo(req: Request<VideoIdInput>, res: Response, next: NextFunction) {
+        try {
+            const video_id: string = req.params.video_id;
+            const { _id: user_id }: { _id: string } = res.locals.userData;
+
+            const updatedVideo: VideoDocument | null = await VideoService.likeVideo(video_id, user_id);
+
+            res.status(200).json({
+                message: "Like video successful",
+                data: updatedVideo
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async unlikeVideo(req: Request<VideoIdInput>, res: Response, next: NextFunction) {
+        try {
+            const video_id: string = req.params.video_id;
+            const { _id: user_id }: { _id: string } = res.locals.userData;
+
+            const updatedVideo: VideoDocument | null = await VideoService.unlikeVideo(video_id, user_id);
+
+            res.status(200).json({
+                message: "Unlike video successful",
+                data: updatedVideo
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async createComment(req: Request<VideoIdInput, {}, CommentInput>, res: Response, next: NextFunction) {
         try {
             const video_id: string = req.params.video_id;

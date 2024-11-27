@@ -16,6 +16,13 @@ const authReducer = (state = initialState, action) => {
                 token
             };
 
+        case GLOBAL_TYPES.AUTH.VERIFY_TOKEN: {
+            return {
+                ...state,
+                user: action.payload.user
+            };
+        }
+
         case GLOBAL_TYPES.AUTH.LOGOUT: {
             return {
                 user: null,

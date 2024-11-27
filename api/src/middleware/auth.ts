@@ -7,7 +7,7 @@ import { VerifyTokenResult } from "../shared";
 export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token: string = req.headers["x-token"] as string;
-        if (!token) throw createHttpError.Unauthorized("Login again");
+        if (!token) throw createHttpError.Unauthorized("Please, Login");
 
         const { data, isExpired }: VerifyTokenResult = await AuthService.verifyToken(token);
 

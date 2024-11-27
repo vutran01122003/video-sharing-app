@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
-import Slider from '@react-native-community/slider';
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, Modal, Alert } from "react-native";
+import Slider from "@react-native-community/slider";
 
-export default function TimeSelectionComponent({ isVisible, onClose, duration, onTimeSelect }) {
+export default function TimeSelectionComponent({ isVisible, onClose, audio, onTimeSelect }) {
+    const audioId = audio?._id;
+    const duration = audio?.duration;
+
     const [startTime, setStartTime] = useState(0);
     const [endTime, setEndTime] = useState(duration);
 
+    useEffect(() => {
+        setStartTime(0);
+        setEndTime(duration);
+    }, [audioId]);
+
     const handleConfirm = () => {
+        if (startTime > endTime) {
+            Alert.alert("Invalid Audio Time", "Start time must be greater than end time.");
+            return;
+        }
         onTimeSelect(Math.floor(startTime), Math.floor(endTime));
         onClose();
     };
@@ -20,12 +32,7 @@ export default function TimeSelectionComponent({ isVisible, onClose, duration, o
     };
 
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isVisible}
-            onRequestClose={onClose}
-        >
+        <Modal animationType="slide" transparent={true} visible={isVisible} onRequestClose={onClose}>
             <View className="flex-1 justify-end bg-black/40">
                 <View className="bg-white p-6 rounded-t-3xl">
                     <Text className="text-xl font-bold text-center mb-4">Select Audio Time</Text>
@@ -49,7 +56,7 @@ export default function TimeSelectionComponent({ isVisible, onClose, duration, o
                         <Text className="text-base font-medium mb-2">End Time: {Math.floor(endTime)}s</Text>
                         <Slider
                             className="h-6"
-                            minimumValue={startTime}
+                            minimumValue={0}
                             maximumValue={duration}
                             value={endTime}
                             onValueChange={handleEndTimeChange}

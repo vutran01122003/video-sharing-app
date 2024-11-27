@@ -22,7 +22,7 @@ function VideoCard({
         <View className={`${width || "w-40"}`}>
             <View className={`relative rounded-lg overflow-hidden shadow-md w-full ${imageHeight || "h-52"}`}>
                 {isStreaming && createdAt && (
-                    <View className="rounded-3xl px-2 py-1 flex-row gap-1 bg-red-600 items-center absolute top-3 left-2 z-10">
+                    <View className="rounded-3xl px-2 py-1 flex-row gap-1 items-center absolute top-3 left-2 z-10">
                         <Entypo name="controller-record" size={12} color="white" />
                         <Text className="color-white text-xs">{`${moment(createdAt).fromNow()}`}</Text>
                     </View>

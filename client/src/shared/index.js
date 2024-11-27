@@ -41,7 +41,7 @@ export const videos = [
         _id: "video01",
         title: "Lovely",
         thumbnail: "https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg",
-        url:"https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/qcpxblupqulaloljlpms",
+        url: "https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/qcpxblupqulaloljlpms",
         views: 1500000,
         user: {
             _id: "092",
@@ -53,7 +53,7 @@ export const videos = [
         _id: "video02",
         title: "Sweet",
         thumbnail: "https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg",
-        url:"https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/igmspt7y3a6xpet4vkbe",
+        url: "https://res.cloudinary.com/dyj2mpgxi/video/upload/f_auto:video,q_auto/v1/NhacTikTok/igmspt7y3a6xpet4vkbe",
         views: 1200000,
         user: {
             _id: "912",
@@ -288,4 +288,21 @@ export const searchingData = [
     }
 ];
 
+// Audio
+export const keyMapping = {
+    "For you": "forYou",
+    Trending: "trending",
+    Saved: "saved"
+};
+
+export const audioTypes = ["For you", "Trending", "Saved"];
+
+// Search
 export const suggestionData = ["Funny momments of pet", "Cats", "Dogs", "Foods for pet", "Vet center"];
+
+// Videos
+export const videoTypes = {
+    MY_VIDEOS: "myVideos",
+    HOME_VIDEOS: "homeVideos",
+    OTHER_VIDEOS: "otherVideos"
+};

@@ -5,6 +5,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Pressable, Alert, ScrollView } from "react-native";
 import { login } from "../redux/actions/auth.action";
 import { authSelector } from "../redux/selector";
+import LoginLogo from "../../assets/images/logo/tiktok_logo.png";
 
 const LoginScreen = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -55,7 +56,7 @@ const LoginScreen = ({ navigation }) => {
             <ScrollView>
                 <View style={styles.container}>
                     <View style={styles.imageContainer}>
-                        <Image source={require("../../assets/tiktoklogo.png")} style={{ width: 150, height: 150 }} />
+                        <Image source={LoginLogo} style={{ width: 150, height: 150 }} />
                         <Text style={styles.welcomeText}>Welcome!</Text>
                     </View>
                     <View style={styles.contentContainer}>

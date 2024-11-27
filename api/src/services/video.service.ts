@@ -4,6 +4,7 @@ import { UpdateVideoInput, UploadVideoInput } from "../schema/video.schema";
 import Comment, { CommentDocument } from "../models/comment.model";
 import { CommentInput, UpdateCommentInput } from "../schema/comment.schema";
 import User from "../models/user.model";
+import { checkObjectId } from "../utils";
 
 class VideoService {
     static async uploadVideo(videoUploadData: UploadVideoInput): Promise<VideoDocument> {
@@ -55,6 +56,59 @@ class VideoService {
         try {
             const result = await Video.findByIdAndDelete(video_id);
             if (!result) throw createHttpError.NotFound("Video doesn't exist");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async likeVideo(video_id: string, user_id: string): Promise<VideoDocument | null> {
+        try {
+            console.log(user_id);
+            if (!checkObjectId(user_id)) throw createHttpError.BadRequest("Invalid user_id");
+
+            const updatedVideo: VideoDocument | null = await Video.findOneAndUpdate(
+                {
+                    _id: video_id,
+                    likes: { $nin: video_id }
+                },
+                {
+                    $push: {
+                        likes: user_id
+                    }
+                },
+                { new: true }
+            );
+
+            let populatedVideo = null;
+            if (updatedVideo) populatedVideo = await updatedVideo.populate("user");
+
+            return populatedVideo;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async unlikeVideo(video_id: string, user_id: string): Promise<VideoDocument | null> {
+        try {
+            if (!checkObjectId(user_id)) throw createHttpError.BadRequest("Invalid user_id");
+
+            const updatedVideo = await Video.findOneAndUpdate(
+                {
+                    _id: video_id,
+                    likes: { $in: user_id }
+                },
+                {
+                    $pull: {
+                        likes: user_id
+                    }
+                },
+                { new: true }
+            );
+
+            let populatedVideo = null;
+            if (updatedVideo) populatedVideo = await updatedVideo.populate("user");
+
+            return populatedVideo;
         } catch (error) {
             throw error;
         }

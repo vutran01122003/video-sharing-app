@@ -13,7 +13,7 @@ export interface UserDocument extends Document {
     user_name: string;
     email: string;
     password: string;
-    follower: [];
+    followers: [];
     following: [];
     comparePassword(password: string): Promise<boolean>;
 }
@@ -40,7 +40,7 @@ const userSchema = new Schema<UserDocument>(
             type: String,
             required: true
         },
-        follower: {
+        followers: {
             type: [{ ref: DOC, type: mongoose.Types.ObjectId }],
             default: []
         },

@@ -8,13 +8,13 @@ import { TouchableOpacity, SafeAreaView, Text, View, Image } from "react-native"
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Camera as CameraFaceDetector } from "react-native-vision-camera-face-detector";
 import { Camera, useCameraFormat, getCameraDevice, useCameraPermission } from "react-native-vision-camera";
-import ModalScreen from "./ModalScreen";
+import AudioModal from "../components/modal/AudioModal";
 import { timeLimit } from "../shared/video";
 import { applyFilter } from "../utils/commands";
 import { downloadImageToCache } from "../utils/cacheImage";
 import CircleProgressBar from "../components/alert/CircleProgressBar";
 import AnimatedAudioButton from "../components/custom/AnimatedAudioButton";
-import pig_nose_filter from "../../assets/filter/pig_nose_filter.png";
+import pig_nose_filter from "../../assets/images/filter/pig_nose_filter.png";
 
 export default function CreateVideoScreen({ navigation, route }) {
     const fps = 60;
@@ -28,7 +28,10 @@ export default function CreateVideoScreen({ navigation, route }) {
     const [hasAudioPermission, setHasAudioPermission] = useState(null);
 
     const [isAudioModal, setIsAudioModal] = useState(false);
-    const [nameAudio, setNameAudio] = useState("Add audio");
+    const [sound, setSound] = useState(null);
+    const [currentAudio, setCurrentAudio] = useState(null);
+    const [audioStartTime, setAudioStartTime] = useState(0);
+    const [audioEndTime, setAudioEndTime] = useState(null);
 
     const [isMute, setIsMute] = useState(false);
     const [isTorch, setIsTorch] = useState(false);
@@ -60,15 +63,18 @@ export default function CreateVideoScreen({ navigation, route }) {
                 setIsRecord(true);
                 setStartTime(Date.now());
 
-                cameraRef.current.startRecording({
-                    onRecordingError: (error) => console.error(error),
-                    onRecordingFinished: async (video) => {
-                        const path = video.path;
-                        const thumbnail = await generateThumbnail(path);
-                        navigation.navigate("Upload", { videoUri: path, thumbnail });
-                        // setVideoPath(video.path);
-                    }
-                });
+                Promise.all([
+                    cameraRef.current.startRecording({
+                        onRecordingError: (error) => console.error(error),
+                        onRecordingFinished: async (video) => {
+                            const path = video.path;
+                            const thumbnail = await generateThumbnail(path);
+                            navigation.navigate("Upload", { videoUri: path, thumbnail });
+                            // setVideoPath(video.path);
+                        }
+                    }),
+                    startMusic()
+                ]);
             }
         } catch (error) {
             throw error;
@@ -79,7 +85,37 @@ export default function CreateVideoScreen({ navigation, route }) {
         if (cameraRef.current) {
             setTime(0);
             setIsRecord(false);
-            await cameraRef.current.stopRecording();
+            await Promise.all([cameraRef.current.stopRecording(), stopMusic()]);
+        }
+    };
+
+    const startMusic = async () => {
+        if (currentAudio) {
+            const { sound: newSound } = await Audio.Sound.createAsync({ uri: currentAudio.audio_url });
+
+            await newSound.setPositionAsync(audioStartTime * 1000);
+            await newSound.playAsync();
+
+            setSound(newSound);
+
+            setTimeout(async () => {
+                await newSound.unloadAsync();
+                setSound(null);
+            }, (audioEndTime - audioStartTime) * 1000);
+        }
+    };
+
+    const stopMusic = async () => {
+        if (sound) {
+            const status = await sound.getStatusAsync();
+            const currentPosition = status.positionMillis / 1000;
+
+            setAudioEndTime(currentPosition);
+
+            await sound.unloadAsync();
+            setSound(null);
+
+            console.log(`Stop! Nhạc đã phát từ giây ${audioStartTime} đến giây ${currentPosition}`);
         }
     };
 
@@ -178,6 +214,10 @@ export default function CreateVideoScreen({ navigation, route }) {
         })();
     }, []);
 
+    useEffect(() => {
+        if (sound) sound.unloadAsync();
+    }, [isFocused]);
+
     if (!hasCameraPermission) return <View />;
     if (device === null) return <View />;
 
@@ -192,7 +232,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                 <CameraFaceDetector
                     ref={cameraRef}
                     video={true}
-                    audio={true}
+                    audio={currentAudio ? false : true}
                     format={format}
                     device={device}
                     resizeMode="cover"
@@ -222,7 +262,10 @@ export default function CreateVideoScreen({ navigation, route }) {
                             <Ionicons name="close" size={24} color="white" />
                         </TouchableOpacity>
 
-                        <AnimatedAudioButton nameAudio={nameAudio} setIsAudioModal={setIsAudioModal} />
+                        <AnimatedAudioButton
+                            nameAudio={currentAudio?.title || "Add audio"}
+                            setIsAudioModal={setIsAudioModal}
+                        />
                     </View>
 
                     <View className="w-12 absolute right-2 top-24 gap-8">
@@ -297,10 +340,14 @@ export default function CreateVideoScreen({ navigation, route }) {
                         </TouchableOpacity>
                     </View>
                 </View>
-                <ModalScreen
+
+                <AudioModal
                     isModalShow={isAudioModal}
+                    setAudioStartTime={setAudioStartTime}
+                    setAudioEndTime={setAudioEndTime}
                     setIsModalShow={setIsAudioModal}
-                    setNameAudio={setNameAudio}
+                    currentAudio={currentAudio}
+                    setCurrentAudio={setCurrentAudio}
                     className="z-50"
                 />
             </View>

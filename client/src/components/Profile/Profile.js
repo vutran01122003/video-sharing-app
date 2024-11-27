@@ -7,6 +7,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import VideoCard from "../video/VideoCard";
 import { authSelector, videoSelector } from "../../redux/selector";
+import { videoTypes } from "../../shared";
 
 export default function Profile() {
     const auth = useSelector(authSelector);
@@ -104,7 +105,8 @@ export default function Profile() {
                                     <TouchableOpacity
                                         onPress={() =>
                                             navigation.navigate("VideoAudio", {
-                                                videos: myVideos,
+                                                user,
+                                                videoType: videoTypes.MY_VIDEOS,
                                                 indexVideo: index,
                                                 screen: "Profile"
                                             })

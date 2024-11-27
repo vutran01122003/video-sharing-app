@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Svg, { Circle } from "react-native-svg";
 
 const CircularProgressBar = ({ progress }) => {
