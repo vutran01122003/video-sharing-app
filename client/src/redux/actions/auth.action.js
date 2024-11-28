@@ -48,7 +48,6 @@ export const login = (loginData) => async (dispatch) => {
             }
         });
     } catch (error) {
-        console.log(error);
         dispatch({
             type: GLOBAL_TYPES.ALERT,
             payload: {

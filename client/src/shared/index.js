@@ -297,6 +297,22 @@ export const keyMapping = {
 
 export const audioTypes = ["For you", "Trending", "Saved"];
 
+// Filter
+export const filterTypes = ["For you", "Trending", "Saved"];
+
+export const filterData = [
+    {
+        _id: "01",
+        name: "Pig nose",
+        image: "https://res.cloudinary.com/dzm0nupxy/image/upload/v1731921259/video_sharing_app/filters/nbzpibvxwzpvuekenvyr.png"
+    },
+    {
+        _id: "02",
+        name: "Pirate",
+        image: "https://res.cloudinary.com/dzm0nupxy/image/upload/v1732773283/video_sharing_app/filters/dhrtm1ynpt3eh4bdtwto.png"
+    }
+];
+
 // Search
 export const suggestionData = ["Funny momments of pet", "Cats", "Dogs", "Foods for pet", "Vet center"];
 

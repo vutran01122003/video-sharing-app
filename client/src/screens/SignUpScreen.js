@@ -62,7 +62,6 @@ export default function SignUp({ navigation }) {
     };
 
     const handleSignUp = () => {
-        console.log("ok");
         if (validate()) {
             dispatch(
                 register({

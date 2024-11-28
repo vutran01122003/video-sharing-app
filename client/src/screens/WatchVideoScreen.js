@@ -181,6 +181,7 @@ export default function WatchingScreen({ navigation, route }) {
                                             <Text className="text-white font-semibold">{`${video.title} ${video.hashtags
                                                 .map((hashtag) => `#${hashtag}`)
                                                 .join(" ")}`}</Text>
+                                            <Text className="text-white font-semibold">{video.description}</Text>
                                         </View>
                                     </View>
 

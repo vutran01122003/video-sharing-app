@@ -15,7 +15,7 @@ export default function TimeSelectionComponent({ isVisible, onClose, audio, onTi
     }, [audioId]);
 
     const handleConfirm = () => {
-        if (startTime > endTime) {
+        if (startTime >= endTime) {
             Alert.alert("Invalid Audio Time", "Start time must be greater than end time.");
             return;
         }

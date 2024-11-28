@@ -52,7 +52,6 @@ class VideoController {
 
     async updateVideoById(req: Request<VideoIdInput, {}, UpdateVideoInput>, res: Response, next: NextFunction) {
         try {
-            console.log(res.locals.userData);
             const video_id: string = req.params.video_id;
             const updatedVideoData: UpdateVideoInput = req.body;
 
@@ -157,8 +156,6 @@ class VideoController {
                 data: updatedComment
             });
         } catch (error) {
-            console.log(error);
-
             next(error);
         }
     }

@@ -14,7 +14,7 @@ export interface VideoDocument extends Document {
     video_url: string;
     title: string;
     description: string;
-    audio_id: AudioDocument["_id"];
+    audioData: AudioVideoDocument;
     hashtags: string[];
     tagLink: UserDocument["_id"][];
     is_private: boolean;
@@ -23,6 +23,21 @@ export interface VideoDocument extends Document {
     views: number;
     comments: CommentDocument["id"][];
 }
+
+export interface AudioVideoDocument extends Document {
+    start_time: number;
+    end_time: number;
+    audio: AudioDocument["_id"];
+}
+
+const audioVideoSchema = new Schema<AudioVideoDocument>({
+    start_time: Number,
+    end_time: Number,
+    audio: {
+        type: Schema.Types.ObjectId,
+        ref: "audio"
+    }
+});
 
 const videoSchema = new Schema<VideoDocument>(
     {
@@ -52,10 +67,7 @@ const videoSchema = new Schema<VideoDocument>(
             type: String,
             maxLength: 500
         },
-        audio_id: {
-            type: mongoose.Types.ObjectId,
-            ref: "audio"
-        },
+        audioData: audioVideoSchema,
         hashtags: {
             type: [String],
             default: []

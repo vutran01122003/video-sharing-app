@@ -63,7 +63,6 @@ class VideoService {
 
     static async likeVideo(video_id: string, user_id: string): Promise<VideoDocument | null> {
         try {
-            console.log(user_id);
             if (!checkObjectId(user_id)) throw createHttpError.BadRequest("Invalid user_id");
 
             const updatedVideo: VideoDocument | null = await Video.findOneAndUpdate(

@@ -24,8 +24,13 @@ export default function AddAudioModal({
     const [sound, setSound] = useState(null);
     const [showTimeSelection, setShowTimeSelection] = useState(false);
 
+    const handleCloseAudioModal = async () => {
+        setIsModalShow(false);
+        clearMusic();
+    };
+
     const handleMorePress = async (audio) => {
-        await stopMusic();
+        if (sound) await sound.stopAsync();
         setCurrentAudio(audio);
         setShowTimeSelection(true);
     };
@@ -60,12 +65,13 @@ export default function AddAudioModal({
         }
     };
 
-    const stopMusic = async () => {
+    const clearMusic = async (isKeepAudioSource) => {
         try {
             if (sound) {
                 await sound.unloadAsync();
                 setSound(null);
-                setCurrentAudio(null);
+
+                if (!isKeepAudioSource) setCurrentAudio(null);
             }
         } catch (error) {
             throw error;
@@ -73,7 +79,7 @@ export default function AddAudioModal({
     };
 
     const useMusic = async (audio) => {
-        await stopMusic();
+        await clearMusic(currentAudio?._id === audio._id);
         setCurrentAudio(audio);
         setIsModalShow(false);
     };
@@ -88,8 +94,15 @@ export default function AddAudioModal({
         };
     }, [sound]);
 
+    useEffect(() => {
+        if (currentAudio?._id) {
+            setAudioStartTime(0);
+            setAudioEndTime(null);
+        }
+    }, [currentAudio]);
+
     const renderAudioItem = ({ item }) => (
-        <TouchableOpacity onPress={() => (currentAudio?._id === item._id ? stopMusic() : startMusic(item))}>
+        <TouchableOpacity onPress={() => (currentAudio?._id === item._id ? clearMusic() : startMusic(item))}>
             <View
                 className={`flex-row items-center justify-between p-4 border-b border-gray-200 
                     ${currentAudio?._id === item._id ? "bg-gray-100" : ""}`}
@@ -121,23 +134,18 @@ export default function AddAudioModal({
                 animationType="slide"
                 transparent={true}
                 visible={isModalShow}
-                onRequestClose={() => setIsModalShow(!isModalShow)}
+                onRequestClose={handleCloseAudioModal}
             >
                 <View className="flex-1 justify-end">
                     <View className="h-1/2 bg-white rounded-t-3xl p-4">
                         <View className="flex-row justify-between items-center mb-4">
                             <Text className="text-xl font-bold">Add audio</Text>
-                            <View className="flex-row items-center gap-2">
+                            <View className="flex-row items-center gap-4">
                                 <TouchableOpacity onPress={() => setShowSearch(!showSearch)}>
-                                    <Feather name="search" size={24} color="gray" />
+                                    <Feather name="search" size={24} color="#333" />
                                 </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        setIsModalShow(false);
-                                        stopMusic();
-                                    }}
-                                >
-                                    <Feather name="x" size={24} color="gray" />
+                                <TouchableOpacity onPress={handleCloseAudioModal}>
+                                    <Feather name="x" size={24} color="#333" />
                                 </TouchableOpacity>
                             </View>
                         </View>

@@ -11,8 +11,8 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
 
         const { data, isExpired }: VerifyTokenResult = await AuthService.verifyToken(token);
 
-        if (!data) throw createHttpError.BadRequest();
         if (isExpired) throw createHttpError.Unauthorized("Login again");
+        if (!data) throw createHttpError.BadRequest();
 
         const userId = data.userId as string;
         const user = await UserService.getUserById(userId);

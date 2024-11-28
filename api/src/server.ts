@@ -38,7 +38,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.log(err);
     const status = err.status || 500;
     const message = err.message || "Error occur in server";
 

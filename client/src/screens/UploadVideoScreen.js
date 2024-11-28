@@ -1,9 +1,20 @@
 import { Video } from "expo-av";
+import RNFS from "react-native-fs";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { AntDesign, FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { SafeAreaView, Text, TextInput, TouchableOpacity, View, Switch, ScrollView, Modal } from "react-native";
+import {
+    SafeAreaView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    Switch,
+    ScrollView,
+    Modal,
+    BackHandler
+} from "react-native";
 import { watchModeList } from "../shared/video";
 import { uploadVideo } from "../redux/actions/video.action";
 import { authSelector } from "../redux/selector";
@@ -16,6 +27,7 @@ export default function UploadVideoScreen({ navigation, route }) {
 
     const videoUri = route.params?.videoUri;
     const thumbnail = route.params?.thumbnail;
+    const audioData = route.params?.audioData;
 
     const isFocused = useIsFocused();
     const videoRef = useRef(null);
@@ -85,22 +97,30 @@ export default function UploadVideoScreen({ navigation, route }) {
     const onUploadVideo = async () => {
         try {
             if (videoUri && user) {
+                const videoData = {
+                    title,
+                    description,
+                    audio: audioData,
+                    user: user._id,
+                    hashtags: hashtagList,
+                    is_private: !!watchModeIndex,
+                    is_comment_allowed: allowComment
+                };
+
+                if (!audioData) delete videoData.audio;
+
                 await dispatch(
                     uploadVideo({
-                        videoData: {
-                            title,
-                            description,
-                            user: user._id,
-                            hashtags: hashtagList,
-                            is_private: !!watchModeIndex,
-                            is_comment_allowed: allowComment
-                        },
+                        videoData,
+                        audioData,
                         videoUri,
                         thumbnail
                     })
                 );
+
                 resetData();
-                navigation.navigate("Profile", { trigger: Math.random() });
+
+                navigation.navigate("Profile");
             }
         } catch (error) {
             throw error;
@@ -126,8 +146,21 @@ export default function UploadVideoScreen({ navigation, route }) {
     };
 
     const goBack = async () => {
+        if (videoUri) await RNFS.unlink(videoUri);
         navigation.navigate("Create");
     };
+
+    useEffect(() => {
+        const backAction = async () => {
+            if (videoUri) await RNFS.unlink(videoUri);
+            navigation.navigate("Create");
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+        return () => backHandler.remove();
+    }, [videoUri]);
 
     return (
         <SafeAreaView>
