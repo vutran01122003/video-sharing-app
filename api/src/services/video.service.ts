@@ -10,7 +10,19 @@ class VideoService {
     static async uploadVideo(videoUploadData: UploadVideoInput): Promise<VideoDocument> {
         try {
             const video = await Video.create(videoUploadData);
-            await video.populate("user");
+            await video.populate([
+                {
+                    path: "user",
+                    model: "user",
+                    select: "avatar user_name"
+                },
+                {
+                    path: "audioData",
+                    populate: {
+                        path: "audio"
+                    }
+                }
+            ]);
             return video.toObject();
         } catch (error) {
             throw error;
@@ -19,7 +31,21 @@ class VideoService {
 
     static async findAllVideoByUserId(user_id: string): Promise<VideoDocument[]> {
         try {
-            const videos = await Video.find({ user: user_id }).sort({ createdAt: -1 }).populate("user");
+            const videos = await Video.find({ user: user_id })
+                .sort({ createdAt: -1 })
+                .populate([
+                    {
+                        path: "user",
+                        model: "user",
+                        select: "avatar user_name"
+                    },
+                    {
+                        path: "audioData",
+                        populate: {
+                            path: "audio"
+                        }
+                    }
+                ]);
             return videos;
         } catch (error) {
             throw error;

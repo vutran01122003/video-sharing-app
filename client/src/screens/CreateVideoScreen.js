@@ -192,7 +192,7 @@ export default function CreateVideoScreen({ navigation, route }) {
             audioData = {
                 start_time: audioStartTime,
                 end_time: audioEndTime,
-                audio_id: currentAudio._id
+                audio: currentAudio._id
             };
         }
 

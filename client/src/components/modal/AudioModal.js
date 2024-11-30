@@ -88,12 +88,14 @@ export default function AddAudioModal({
         dispatch(getAudios());
     }, [dispatch]);
 
+    // Clear sound if previous sound still exists
     useEffect(() => {
         return () => {
             if (sound) sound.unloadAsync();
         };
     }, [sound]);
 
+    // Automatically reset audio data
     useEffect(() => {
         if (currentAudio?._id) {
             setAudioStartTime(0);

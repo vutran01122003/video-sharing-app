@@ -100,14 +100,14 @@ export default function UploadVideoScreen({ navigation, route }) {
                 const videoData = {
                     title,
                     description,
-                    audio: audioData,
+                    audioData,
                     user: user._id,
                     hashtags: hashtagList,
                     is_private: !!watchModeIndex,
                     is_comment_allowed: allowComment
                 };
 
-                if (!audioData) delete videoData.audio;
+                if (!audioData) delete videoData.audioData;
 
                 await dispatch(
                     uploadVideo({

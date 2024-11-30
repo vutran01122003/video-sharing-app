@@ -20,6 +20,8 @@ export const uploadVideo =
                 thumbnail: uploadData[1].secure_url
             });
 
+            console.log(res.data.data);
+
             dispatch({
                 type: GLOBAL_TYPES.VIDEO.UPLOAD_VIDEO,
                 payload: {

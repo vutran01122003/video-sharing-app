@@ -1,17 +1,8 @@
-import { Video } from "expo-av";
+import { Audio, Video } from "expo-av";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
-import {
-    View,
-    TouchableOpacity,
-    Animated,
-    SafeAreaView,
-    Dimensions,
-    ScrollView,
-    BackHandler,
-    Text
-} from "react-native";
+import { View, TouchableOpacity, SafeAreaView, Dimensions, ScrollView, BackHandler, Text, Image } from "react-native";
 import CommentModal from "../components/modal/CommentModal";
 import { useDispatch, useSelector } from "react-redux";
 import { videoSelector } from "../redux/selector";
@@ -31,16 +22,27 @@ export default function WatchingScreen({ navigation, route }) {
     const videoRef = useRef();
     const isFocus = useIsFocused();
 
+    const [isLoading, setIsLoading] = useState(true);
     const [isPlaying, setIsPlaying] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-
     const [currentIndex, setCurrentIndex] = useState(null);
+    const [sound, setSound] = useState(null);
+    const [timer, setTimer] = useState(null);
 
-    const togglePlayPause = async () => {
-        if (videoRef.current) {
-            isPlaying ? await videoRef.current.pauseAsync() : await videoRef.current.playAsync();
-            setIsPlaying((prev) => !prev);
+    const togglePlayPause = async (index) => {
+        const video = videoRef?.current;
+        if (video) {
+            const { durationMillis, positionMillis } = await video.getStatusAsync();
+
+            if (positionMillis && durationMillis === positionMillis) {
+                // Create new sound and video to play again
+                setCurrentIndex(null);
+                setCurrentIndex(index);
+            } else {
+                isPlaying ? await video.pauseAsync() : await video.playAsync();
+                setIsPlaying((prev) => !prev);
+            }
         }
     };
 
@@ -87,16 +89,94 @@ export default function WatchingScreen({ navigation, route }) {
         setCurrentIndex(indexVideo);
     }, [indexVideo, isFocus]);
 
+    // Prepare audio data.
+    // Automatically reset video control.
     useEffect(() => {
-        if (!isPlaying) setIsPlaying(true);
-    }, [currentIndex]);
+        const audioData = video[videoType][currentIndex]?.audioData;
 
+        setIsLoading(true);
+
+        if (!isPlaying) setIsPlaying(true);
+        if (audioData)
+            Audio.Sound.createAsync({ uri: audioData.audio.audio_url }).then(({ sound }) => {
+                setSound(sound);
+            });
+    }, [currentIndex, isFocus]);
+
+    // Move scroll to selected video.
     useEffect(() => {
         if (scrollRef.current)
             scrollRef.current?.scrollTo({
                 y: indexVideo * screenHeight
             });
     }, [scrollRef.current, isFocus, indexVideo]);
+
+    // Play audio after loading video.
+    useEffect(() => {
+        const audioData = video[videoType][currentIndex]?.audioData;
+        if (!isLoading && audioData && sound) {
+            let timerId = null;
+            const { start_time, end_time } = audioData;
+            const time = (end_time - start_time) * 1000;
+
+            sound.setPositionAsync(start_time * 1000).then(() => {
+                sound.playAsync().then(() => {
+                    timerId = setTimeout(async () => {
+                        await sound.unloadAsync();
+                        setSound(null);
+                    }, time);
+                    setTimer(timerId);
+                });
+            });
+
+            return () => {
+                clearTimeout(timerId);
+            };
+        }
+    }, [isLoading, sound]);
+
+    // Clear sound after going other screen.
+    // Clear sound after wacthing other video.
+    useEffect(() => {
+        return () => {
+            if (sound) {
+                sound.unloadAsync();
+                setSound(null);
+            }
+        };
+    }, [currentIndex, sound, isFocus]);
+
+    useEffect(() => {
+        if (!isFocus) setCurrentIndex(null);
+    }, [isFocus]);
+
+    // Play and pause audio and create new setTimeOut to stop play audio.
+    useEffect(() => {
+        const audioData = video[videoType][currentIndex]?.audioData;
+        if (sound && audioData && !isLoading) {
+            const endTimeMs = audioData.end_time * 1000;
+            (async () => {
+                const { isPlaying: isPlayingAudio, positionMillis } = await sound.getStatusAsync();
+                if (positionMillis !== 0 && positionMillis <= endTimeMs) {
+                    if (isPlayingAudio && !isPlaying) {
+                        if (timer) clearTimeout(timer);
+                        await sound.pauseAsync();
+                    }
+                    if (!isPlayingAudio && isPlaying) {
+                        let timerId = null;
+
+                        await sound.playAsync();
+
+                        timerId = setTimeout(async () => {
+                            await sound.unloadAsync();
+                        }, endTimeMs - positionMillis);
+
+                        setTimer(timerId);
+                    }
+                }
+            })();
+        }
+    }, [sound, isPlaying, isLoading, timer]);
 
     return video[videoType] ? (
         <SafeAreaView className="h-full w-full relative">
@@ -115,105 +195,136 @@ export default function WatchingScreen({ navigation, route }) {
             >
                 <View className="h-full w-full">
                     {video[videoType].length > 0 &&
-                        video[videoType].map((video, index) => (
-                            <View style={{ height: screenHeight, width: screenWidth }} key={video._id}>
-                                <Video
-                                    ref={index === currentIndex ? videoRef : null}
-                                    isLooping={true}
-                                    resizeMode="cover"
-                                    source={{ uri: video.video_url }}
-                                    shouldPlay={index === currentIndex ? true : false}
-                                    isMuted={isMuted}
-                                    style={{
-                                        flex: 1
-                                    }}
-                                />
-
-                                <View className="absolute right-4 bottom-1/3 items-center gap-8">
-                                    {video.user?.avatar && (
-                                        <Avatar
-                                            image={video.user.avatar}
-                                            isVideo={
-                                                video.user._id !== user._id && !user.following.includes(video.user._id)
-                                            }
-                                        />
-                                    )}
-
-                                    <View className="items-center">
-                                        <TouchableOpacity
-                                            className="my-2.5 p-2.5 bg-black/50 rounded-full"
-                                            onPress={() => {
-                                                video.likes.includes(user._id)
-                                                    ? handleUnlikeVideo(video._id)
-                                                    : handleLikeVideo(video._id);
+                        video[videoType].map((video, index) => {
+                            if (index === currentIndex) {
+                                return (
+                                    <View
+                                        style={{ height: screenHeight, width: screenWidth, backgroundColor: "black" }}
+                                        key={video._id}
+                                    >
+                                        <Video
+                                            ref={index === currentIndex ? videoRef : null}
+                                            resizeMode="cover"
+                                            source={{ uri: video.video_url }}
+                                            shouldPlay={true}
+                                            isMuted={isMuted}
+                                            style={{
+                                                flex: 1
                                             }}
-                                        >
-                                            <MaterialIcons
-                                                name="favorite"
-                                                size={35}
-                                                color={video.likes.includes(user._id) ? "#F44B87" : "white"}
-                                            />
-                                        </TouchableOpacity>
-                                        <Text className="text-white font-semibold">
-                                            {video.likes.length > 0 && millify(video.likes.length)}
-                                        </Text>
-                                    </View>
+                                            onLoad={() => {
+                                                setIsLoading(false);
+                                            }}
+                                            onPlaybackStatusUpdate={(status) => {
+                                                const { durationMillis, positionMillis } = status;
+                                                if (durationMillis && positionMillis === durationMillis)
+                                                    setIsPlaying(false);
+                                            }}
+                                        />
 
-                                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                        <MaterialIcons name="chat" size={35} color="white" />
-                                    </TouchableOpacity>
+                                        <View className="absolute right-4 bottom-1/3 items-center gap-8">
+                                            {video.user?.avatar && (
+                                                <Avatar
+                                                    image={video.user.avatar}
+                                                    isVideo={
+                                                        video.user._id !== user._id &&
+                                                        !user.following.includes(video.user._id)
+                                                    }
+                                                />
+                                            )}
 
-                                    <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
-                                        <MaterialIcons name="share" size={35} color="white" />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View className="absolute w-full bottom-1 px-4 gap-4">
-                                    <View className="flex-row">
-                                        <View className="gap-1">
-                                            <View className="flex-row gap-2 items-center">
-                                                <Text className="text-white font-bold text-lg">
-                                                    @{video.user.user_name}
+                                            <View className="items-center">
+                                                <TouchableOpacity
+                                                    className="my-2.5 p-2.5 bg-black/50 rounded-full"
+                                                    onPress={() => {
+                                                        video.likes.includes(user._id)
+                                                            ? handleUnlikeVideo(video._id)
+                                                            : handleLikeVideo(video._id);
+                                                    }}
+                                                >
+                                                    <MaterialIcons
+                                                        name="favorite"
+                                                        size={35}
+                                                        color={video.likes.includes(user._id) ? "#F44B87" : "white"}
+                                                    />
+                                                </TouchableOpacity>
+                                                <Text className="text-white font-semibold">
+                                                    {video.likes.length > 0 && millify(video.likes.length)}
                                                 </Text>
-                                                <Text className="text-white">{moment(video.createdAt).fromNow()}</Text>
                                             </View>
 
-                                            <Text className="text-white font-semibold">{`${video.title} ${video.hashtags
-                                                .map((hashtag) => `#${hashtag}`)
-                                                .join(" ")}`}</Text>
-                                            <Text className="text-white font-semibold">{video.description}</Text>
+                                            <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                                <MaterialIcons name="chat" size={35} color="white" />
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">
+                                                <MaterialIcons name="share" size={35} color="white" />
+                                            </TouchableOpacity>
                                         </View>
-                                    </View>
 
-                                    <View className="justify-between w-full items-center flex-row">
-                                        <TouchableOpacity onPress={() => togglePlayPause(video._id)}>
-                                            <MaterialIcons
-                                                name={isPlaying ? "pause" : "play-arrow"}
-                                                size={40}
-                                                color="white"
+                                        <View className="absolute w-full bottom-1 px-4 gap-4">
+                                            <View className="flex-row">
+                                                <View className="gap-1">
+                                                    <View className="flex-row gap-2 items-center">
+                                                        <Text className="text-white font-bold text-lg">
+                                                            @{video.user.user_name}
+                                                        </Text>
+                                                        <Text className="text-white">
+                                                            {moment(video.createdAt).fromNow()}
+                                                        </Text>
+                                                    </View>
+
+                                                    <Text className="text-white font-semibold">{`${
+                                                        video.title
+                                                    } ${video.hashtags
+                                                        .map((hashtag) => `#${hashtag}`)
+                                                        .join(" ")}`}</Text>
+
+                                                    {video.description && (
+                                                        <Text className="text-white font-semibold">
+                                                            {video.description}
+                                                        </Text>
+                                                    )}
+                                                </View>
+                                            </View>
+
+                                            <View className="justify-between w-full items-center flex-row">
+                                                <TouchableOpacity onPress={() => togglePlayPause(index)}>
+                                                    <MaterialIcons
+                                                        name={isPlaying ? "pause" : "play-arrow"}
+                                                        size={40}
+                                                        color="white"
+                                                    />
+                                                </TouchableOpacity>
+
+                                                <TouchableOpacity onPress={toggleMute}>
+                                                    <MaterialIcons
+                                                        name={isMuted ? "volume-off" : "volume-up"}
+                                                        size={35}
+                                                        color="white"
+                                                    />
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+
+                                        {modalVisible && currentIndex === index && (
+                                            <CommentModal
+                                                visible={modalVisible}
+                                                onClose={() => setModalVisible(false)}
+                                                className="z-40"
+                                                video_id={video._id}
                                             />
-                                        </TouchableOpacity>
-
-                                        <TouchableOpacity onPress={toggleMute}>
-                                            <MaterialIcons
-                                                name={isMuted ? "volume-off" : "volume-up"}
-                                                size={35}
-                                                color="white"
-                                            />
-                                        </TouchableOpacity>
+                                        )}
                                     </View>
-                                </View>
-
-                                {modalVisible && currentIndex === index && (
-                                    <CommentModal
-                                        visible={modalVisible}
-                                        onClose={() => setModalVisible(false)}
-                                        className="z-40"
-                                        video_id={video._id}
-                                    />
-                                )}
-                            </View>
-                        ))}
+                                );
+                            }
+                            return (
+                                <Image
+                                    key={index}
+                                    source={{ uri: video.thumbnail }}
+                                    style={{ height: screenHeight, width: screenWidth, resizeMode: "cover" }}
+                                />
+                            );
+                        })}
                 </View>
             </ScrollView>
         </SafeAreaView>
