@@ -6,10 +6,9 @@ import { useDispatch } from "react-redux";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import VideoCard from "../video/VideoCard";
-import { videoTypes } from "../../shared";
 import { logout } from "../../redux/actions/auth.action";
 
-export default function Profile({ user, videos, isAuthUser, screen }) {
+export default function Profile({ user, videos, isAuthUser, screen, videoType }) {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -34,7 +33,7 @@ export default function Profile({ user, videos, isAuthUser, screen }) {
     ];
 
     const onLogout = async () => {
-        await dispatch(logout);
+        await dispatch(logout());
         navigation.navigate("Login");
     };
 
@@ -62,7 +61,7 @@ export default function Profile({ user, videos, isAuthUser, screen }) {
                 )}
 
                 <View className="items-center gap-4">
-                    <Image source={{ uri: user.avatar }} className="w-28 h-28 rounded-full" />
+                    <Image source={{ uri: user?.avatar }} className="w-28 h-28 rounded-full" />
                     <Text className="text-center font-bold text-3xl">{user.user_name}</Text>
                     <View className="flex-row gap-12">
                         <View>
@@ -111,7 +110,7 @@ export default function Profile({ user, videos, isAuthUser, screen }) {
                                         onPress={() =>
                                             navigation.navigate("VideoAudio", {
                                                 user,
-                                                videoType: videoTypes.MY_VIDEOS,
+                                                videoType,
                                                 indexVideo: index,
                                                 screen
                                             })

@@ -43,6 +43,33 @@ export const uploadVideo =
         }
     };
 
+export const getHomeVideos = () => async (dispatch) => {
+    try {
+        const res = await getDataApi(`/videos`);
+
+        dispatch({
+            type: GLOBAL_TYPES.VIDEO.GET_HOME_VIDEOS,
+            payload: {
+                videos: res.data.data
+            }
+        });
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data?.message || "Get videos successful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Get videos failed"
+            }
+        });
+    }
+};
+
 export const getVideosByUserId =
     ({ userId, isAuthUser }) =>
     async (dispatch) => {

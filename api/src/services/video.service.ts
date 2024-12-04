@@ -14,7 +14,7 @@ class VideoService {
                 {
                     path: "user",
                     model: "user",
-                    select: "avatar user_name"
+                    select: "-password"
                 },
                 {
                     path: "audioData",
@@ -37,7 +37,7 @@ class VideoService {
                     {
                         path: "user",
                         model: "user",
-                        select: "avatar user_name"
+                        select: "-password"
                     },
                     {
                         path: "audioData",
@@ -52,23 +52,25 @@ class VideoService {
         }
     }
 
-    static async findAllVideoByKeyword(keyword: string): Promise<VideoDocument[]> {
+    static async findAllVideo(keyword: string): Promise<VideoDocument[]> {
         try {
-            const videos = await Video.find({
-                title: { $regex: keyword, $options: "i" }
-            }).populate([
-                {
-                    path: "user",
-                    model: "user",
-                    select: "avatar user_name"
-                },
-                {
-                    path: "audioData",
-                    populate: {
-                        path: "audio"
+            const filterData = !keyword ? {} : { title: { $regex: keyword, $options: "i" } };
+
+            const videos = await Video.find(filterData)
+                .sort({ createdAt: -1 })
+                .populate([
+                    {
+                        path: "user",
+                        model: "user",
+                        select: "-password"
+                    },
+                    {
+                        path: "audioData",
+                        populate: {
+                            path: "audio"
+                        }
                     }
-                }
-            ]);
+                ]);
             return videos;
         } catch (error) {
             throw error;
@@ -77,7 +79,19 @@ class VideoService {
 
     static async findVideoById(video_id: string): Promise<VideoDocument> {
         try {
-            const video: VideoDocument | null = await Video.findById(video_id);
+            const video: VideoDocument | null = await Video.findById(video_id).populate([
+                {
+                    path: "user",
+                    model: "user",
+                    select: "-password"
+                },
+                {
+                    path: "audioData",
+                    populate: {
+                        path: "audio"
+                    }
+                }
+            ]);
 
             if (!video) throw createHttpError.NotFound("Video doesn't exist");
 
@@ -95,7 +109,21 @@ class VideoService {
 
             if (!updatedVideo) throw createHttpError.NotFound("Video doesn't exist");
 
-            return updatedVideo?.toObject();
+            const populatedVideo = await updatedVideo.populate([
+                {
+                    path: "user",
+                    model: "user",
+                    select: "-password"
+                },
+                {
+                    path: "audioData",
+                    populate: {
+                        path: "audio"
+                    }
+                }
+            ]);
+
+            return populatedVideo?.toObject();
         } catch (error) {
             throw error;
         }
@@ -128,7 +156,7 @@ class VideoService {
             );
 
             let populatedVideo = null;
-            if (updatedVideo) populatedVideo = await updatedVideo.populate("user");
+            if (updatedVideo) populatedVideo = await updatedVideo.populate("user", "-password");
 
             return populatedVideo;
         } catch (error) {
@@ -154,7 +182,7 @@ class VideoService {
             );
 
             let populatedVideo = null;
-            if (updatedVideo) populatedVideo = await updatedVideo.populate("user");
+            if (updatedVideo) populatedVideo = await updatedVideo.populate("user", "-password");
 
             return populatedVideo;
         } catch (error) {

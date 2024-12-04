@@ -35,10 +35,10 @@ class VideoController {
         }
     }
 
-    async getAllVideoByKeyword(req: Request<{}, {}, {}, keywordVideoSchema>, res: Response, next: NextFunction) {
+    async getVideos(req: Request<{}, {}, {}, keywordVideoSchema>, res: Response, next: NextFunction) {
         try {
-            const keyword: string = req.query.keyword;
-            const videos: VideoDocument[] = await VideoService.findAllVideoByKeyword(keyword);
+            const keyword = req.query.keyword as string;
+            const videos: VideoDocument[] = await VideoService.findAllVideo(keyword);
 
             res.status(200).json({
                 message: "Get videos by keyword successfully",

@@ -4,9 +4,17 @@ import VideoCard from "../components/video/VideoCard";
 import TopicCard from "../components/home/TopicCard";
 import AudioCard from "../components/home/AudioCard";
 import HeaderComponent from "../components/layout/Header";
-import { user, users, videos, streamingVideos, audioList, topics } from "../shared";
+import { users, streamingVideos, audioList, topics, videoTypes } from "../shared";
+import { useSelector } from "react-redux";
+import { authSelector, videoSelector } from "../redux/selector";
 
 export default function HomeScreen({ navigation, route }) {
+    const video = useSelector(videoSelector);
+    const auth = useSelector(authSelector);
+
+    const user = auth.user;
+    const videos = video.homeVideos;
+
     return (
         <SafeAreaView>
             <HeaderComponent />
@@ -14,14 +22,19 @@ export default function HomeScreen({ navigation, route }) {
                 <View className="w-full h-full bg-white p-5 pb-28">
                     <View className="w-full flex-row gap-4 items-start">
                         <TouchableOpacity>
-                            <Avatar isCreateStoryButton={true} image={user.avatar} size={20} />
+                            <Avatar isCreateStoryButton={true} image={user?.avatar} size={20} />
                         </TouchableOpacity>
 
                         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="w-full flex-row gap-5">
                                 {users.map((user) => (
                                     <View key={user._id}>
-                                        <Avatar username={user.username} image={user.avatar} isStory={true} size={20} />
+                                        <Avatar
+                                            username={user.username}
+                                            image={user?.avatar}
+                                            isStory={true}
+                                            size={20}
+                                        />
                                     </View>
                                 ))}
                             </View>
@@ -36,15 +49,26 @@ export default function HomeScreen({ navigation, route }) {
 
                         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="flex-row gap-6">
-                                {videos.map((video) => (
+                                {videos.map((video, index) => (
                                     <View key={video._id}>
-                                        <VideoCard
-                                            image={video.thumbnail}
-                                            title={video.title}
-                                            views={video.views}
-                                            user={video.user}
-                                            isTrending={true}
-                                        />
+                                        <TouchableOpacity
+                                            onPress={() =>
+                                                navigation.navigate("VideoAudio", {
+                                                    user,
+                                                    videoType: videoTypes.HOME_VIDEOS,
+                                                    indexVideo: index,
+                                                    screen: "Home"
+                                                })
+                                            }
+                                        >
+                                            <VideoCard
+                                                image={video.thumbnail}
+                                                title={video.title}
+                                                views={video.views}
+                                                user={video.user}
+                                                isTrending={true}
+                                            />
+                                        </TouchableOpacity>
                                     </View>
                                 ))}
                             </View>
@@ -71,16 +95,18 @@ export default function HomeScreen({ navigation, route }) {
 
                         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View className="flex-row gap-6">
-                                {streamingVideos.map((video) => (
+                                {streamingVideos.map((video, index) => (
                                     <View key={video._id}>
-                                        <VideoCard
-                                            isStreaming={true}
-                                            image={video.thumbnail}
-                                            createdAt={video.createdAt}
-                                            title={video.title}
-                                            views={video.views}
-                                            user={video.user}
-                                        />
+                                        <TouchableOpacity>
+                                            <VideoCard
+                                                isStreaming={true}
+                                                image={video.thumbnail}
+                                                createdAt={video.createdAt}
+                                                title={video.title}
+                                                views={video.views}
+                                                user={video.user}
+                                            />
+                                        </TouchableOpacity>
                                     </View>
                                 ))}
                             </View>

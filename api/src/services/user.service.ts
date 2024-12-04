@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import User, { UserDocument } from "../models/user.model";
-import { UserInput } from "../schema/user.schema";
+import { UserInput, userQueryInput } from "../schema/user.schema";
+import { UserFilterData } from "../shared";
 
 class UserService {
     static async create(userData: UserInput): Promise<UserDocument> {
@@ -20,12 +21,12 @@ class UserService {
                 {
                     path: "followers",
                     model: "user",
-                    select: "avatar user_name"
+                    select: "avatar user_name followers following"
                 },
                 {
                     path: "following",
                     model: "user",
-                    select: "avatar user_name"
+                    select: "avatar user_name followers following"
                 }
             ]);
 
@@ -37,23 +38,34 @@ class UserService {
         }
     }
 
-    static async getUsersByUserName(user_name: string): Promise<UserDocument[]> {
+    static async getUsers(query: userQueryInput, authUser: UserDocument): Promise<UserDocument[]> {
         try {
-            const users = await User.find({
+            const user_name = query.user_name as string;
+            const isSuggestion = query.isSuggestion as boolean;
+
+            const filterData: UserFilterData = {
                 user_name: {
                     $regex: user_name,
                     $options: "i"
+                },
+                _id: {
+                    $nin: [...authUser.following, authUser._id]
                 }
-            }).populate([
+            };
+
+            if (!user_name) delete filterData.user_name;
+            if (!isSuggestion) delete filterData._id;
+
+            const users = await User.find(filterData).populate([
                 {
                     path: "followers",
                     model: "user",
-                    select: "avatar user_name"
+                    select: "avatar user_name followers following"
                 },
                 {
                     path: "following",
                     model: "user",
-                    select: "avatar user_name"
+                    select: "avatar user_name followers following"
                 }
             ]);
 
@@ -65,20 +77,7 @@ class UserService {
 
     static async getUserById(user_id: string): Promise<UserDocument> {
         try {
-            const user = await User.findById(user_id)
-                .populate([
-                    {
-                        path: "followers",
-                        model: "user",
-                        select: "avatar user_name"
-                    },
-                    {
-                        path: "following",
-                        model: "user",
-                        select: "avatar user_name"
-                    }
-                ])
-                .select("-password");
+            const user = await User.findById(user_id).select("-password");
 
             if (!user) throw createHttpError.NotFound("User does not exist");
 
@@ -113,12 +112,12 @@ class UserService {
                         {
                             path: "followers",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         },
                         {
                             path: "following",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         }
                     ])
                     .select("-password"),
@@ -140,12 +139,12 @@ class UserService {
                         {
                             path: "followers",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         },
                         {
                             path: "following",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         }
                     ])
                     .select("-password")
@@ -179,12 +178,12 @@ class UserService {
                         {
                             path: "followers",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         },
                         {
                             path: "following",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         }
                     ])
                     .select("-password"),
@@ -206,12 +205,12 @@ class UserService {
                         {
                             path: "followers",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         },
                         {
                             path: "following",
                             model: "user",
-                            select: "avatar user_name"
+                            select: "avatar user_name followers following"
                         }
                     ])
                     .select("-password")

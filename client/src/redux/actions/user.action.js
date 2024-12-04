@@ -31,7 +31,7 @@ export const getSeachingUsers = (user_name) => async (dispatch) => {
 export const followUser = (user_id) => async (dispatch) => {
     try {
         const res = await patchDataApi(`/users/${user_id}/follow`);
-        console.log(res.data.data);
+
         dispatch({
             type: GLOBAL_TYPES.USER.UPDATE_USER,
             payload: {

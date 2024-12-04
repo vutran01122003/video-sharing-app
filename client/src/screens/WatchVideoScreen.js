@@ -1,5 +1,5 @@
 import { Audio, Video } from "expo-av";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import {
@@ -41,18 +41,22 @@ export default function WatchingScreen({ navigation, route }) {
     const [timer, setTimer] = useState(null);
 
     const togglePlayPause = async (index) => {
-        const video = videoRef?.current;
-        if (video) {
-            const { durationMillis, positionMillis } = await video.getStatusAsync();
+        try {
+            const video = videoRef?.current;
+            if (video) {
+                const { durationMillis, positionMillis } = await video.getStatusAsync();
 
-            if (positionMillis && durationMillis === positionMillis) {
-                // Create new sound and video to play again
-                setCurrentIndex(null);
-                setCurrentIndex(index);
-            } else {
-                isPlaying ? await video.pauseAsync() : await video.playAsync();
-                setIsPlaying((prev) => !prev);
+                if (positionMillis && durationMillis === positionMillis) {
+                    // Create new sound and video to play again
+                    setCurrentIndex(null);
+                    setCurrentIndex(index);
+                } else {
+                    isPlaying ? await video.pauseAsync() : await video.playAsync();
+                    setIsPlaying((prev) => !prev);
+                }
             }
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -102,15 +106,19 @@ export default function WatchingScreen({ navigation, route }) {
     // Prepare audio data.
     // Automatically reset video control.
     useEffect(() => {
-        const audioData = video[videoType][currentIndex]?.audioData;
+        try {
+            const audioData = video[videoType][currentIndex]?.audioData;
 
-        setIsLoading(true);
+            setIsLoading(true);
 
-        if (!isPlaying) setIsPlaying(true);
-        if (audioData)
-            Audio.Sound.createAsync({ uri: audioData.audio.audio_url }).then(({ sound }) => {
-                setSound(sound);
-            });
+            if (!isPlaying) setIsPlaying(true);
+            if (audioData)
+                Audio.Sound.createAsync({ uri: audioData.audio.audio_url }).then(({ sound }) => {
+                    setSound(sound);
+                });
+        } catch (error) {
+            console.log(error);
+        }
     }, [currentIndex, isFocus]);
 
     // Move scroll to selected video.
@@ -123,25 +131,29 @@ export default function WatchingScreen({ navigation, route }) {
 
     // Play audio after loading video.
     useEffect(() => {
-        const audioData = video[videoType][currentIndex]?.audioData;
-        if (!isLoading && audioData && sound) {
-            let timerId = null;
-            const { start_time, end_time } = audioData;
-            const time = (end_time - start_time) * 1000;
+        try {
+            const audioData = video[videoType][currentIndex]?.audioData;
+            if (!isLoading && audioData && sound) {
+                let timerId = null;
+                const { start_time, end_time } = audioData;
+                const time = (end_time - start_time) * 1000;
 
-            sound.setPositionAsync(start_time * 1000).then(() => {
-                sound.playAsync().then(() => {
-                    timerId = setTimeout(async () => {
-                        await sound.unloadAsync();
-                        setSound(null);
-                    }, time);
-                    setTimer(timerId);
+                sound.setPositionAsync(start_time * 1000).then(() => {
+                    sound.playAsync().then(() => {
+                        timerId = setTimeout(async () => {
+                            await sound.unloadAsync();
+                            setSound(null);
+                        }, time);
+                        setTimer(timerId);
+                    });
                 });
-            });
 
-            return () => {
-                clearTimeout(timerId);
-            };
+                return () => {
+                    clearTimeout(timerId);
+                };
+            }
+        } catch (error) {
+            console.log(error);
         }
     }, [isLoading, sound]);
 
@@ -150,8 +162,12 @@ export default function WatchingScreen({ navigation, route }) {
     useEffect(() => {
         return () => {
             if (sound) {
-                sound.unloadAsync();
-                setSound(null);
+                try {
+                    sound.unloadAsync();
+                    setSound(null);
+                } catch (error) {
+                    console.log(error);
+                }
             }
         };
     }, [currentIndex, sound, isFocus]);
@@ -162,29 +178,33 @@ export default function WatchingScreen({ navigation, route }) {
 
     // Play and pause audio and create new setTimeOut to stop play audio.
     useEffect(() => {
-        const audioData = video[videoType][currentIndex]?.audioData;
-        if (sound && audioData && !isLoading) {
-            const endTimeMs = audioData.end_time * 1000;
-            (async () => {
-                const { isPlaying: isPlayingAudio, positionMillis } = await sound.getStatusAsync();
-                if (positionMillis !== 0 && positionMillis <= endTimeMs) {
-                    if (isPlayingAudio && !isPlaying) {
-                        if (timer) clearTimeout(timer);
-                        await sound.pauseAsync();
+        try {
+            const audioData = video[videoType][currentIndex]?.audioData;
+            if (sound && audioData && !isLoading) {
+                const endTimeMs = audioData.end_time * 1000;
+                (async () => {
+                    const { isPlaying: isPlayingAudio, positionMillis } = await sound.getStatusAsync();
+                    if (positionMillis !== 0 && positionMillis <= endTimeMs) {
+                        if (isPlayingAudio && !isPlaying) {
+                            if (timer) clearTimeout(timer);
+                            await sound.pauseAsync();
+                        }
+                        if (!isPlayingAudio && isPlaying) {
+                            let timerId = null;
+
+                            await sound.playAsync();
+
+                            timerId = setTimeout(async () => {
+                                await sound.unloadAsync();
+                            }, endTimeMs - positionMillis);
+
+                            setTimer(timerId);
+                        }
                     }
-                    if (!isPlayingAudio && isPlaying) {
-                        let timerId = null;
-
-                        await sound.playAsync();
-
-                        timerId = setTimeout(async () => {
-                            await sound.unloadAsync();
-                        }, endTimeMs - positionMillis);
-
-                        setTimer(timerId);
-                    }
-                }
-            })();
+                })();
+            }
+        } catch (error) {
+            console.log(error);
         }
     }, [sound, isPlaying, isLoading, timer]);
 
@@ -254,7 +274,7 @@ export default function WatchingScreen({ navigation, route }) {
 
                                             <View className="items-center">
                                                 <TouchableOpacity
-                                                    className="my-2.5 p-2.5 bg-black/50 rounded-full"
+                                                    className="p-2.5 bg-black/50 rounded-full"
                                                     onPress={() => {
                                                         video.likes.includes(user._id)
                                                             ? handleUnlikeVideo(video._id)
@@ -274,7 +294,7 @@ export default function WatchingScreen({ navigation, route }) {
 
                                             <TouchableOpacity onPress={() => setModalVisible(true)}>
                                                 {video.is_comment_allowed && (
-                                                    <MaterialIcons name="chat" size={35} color="white" />
+                                                    <FontAwesome name="commenting" size={35} color="white" />
                                                 )}
                                             </TouchableOpacity>
 

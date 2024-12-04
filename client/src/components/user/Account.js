@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import GLOBAL_TYPES from "../../redux/actions/globalTypes";
 import { followUser, unfollowUser } from "../../redux/actions/user.action";
 
-function Account({ user, screen, followingList }) {
+function Account({ user, followingList }) {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -21,9 +21,7 @@ function Account({ user, screen, followingList }) {
 
     const navigateOtherProfile = async () => {
         await onSetCurrentUser();
-        navigation.navigate("OtherProfile", {
-            screen
-        });
+        navigation.navigate("OtherProfile");
     };
 
     const onFollow = async () => {
@@ -39,14 +37,14 @@ function Account({ user, screen, followingList }) {
             <TouchableOpacity onPress={navigateOtherProfile}>
                 <View className="flex-row items-center p-4 gap-4">
                     <Image
-                        source={{ uri: user.avatar }}
+                        source={{ uri: user?.avatar }}
                         style={{ resizeMode: "cover", width: 50, height: 50, borderRadius: 100 }}
                     />
                     <Text className="text-lg font-bold color-gray-600">{user?.user_name}</Text>
                 </View>
             </TouchableOpacity>
 
-            <View className="flex-row items-center gap-4">
+            <View className="flex-row items-center p-4 gap-4">
                 <TouchableOpacity onPress={isExists ? onUnfollow : onFollow}>
                     <View
                         className={`${

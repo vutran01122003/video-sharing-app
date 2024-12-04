@@ -7,15 +7,16 @@ import { users } from "../shared";
 import { useSelector } from "react-redux";
 import { authSelector } from "../redux/selector";
 import Avatar from "../components/user/Avatar";
+import Account from "../components/user/Account";
 
 const tabs = [
     {
-        _id: "followers",
-        label: "followers"
+        _id: "following",
+        label: "Following"
     },
     {
-        _id: "following",
-        label: "following"
+        _id: "followers",
+        label: "Followers"
     }
 ];
 
@@ -23,38 +24,14 @@ export default function FollowScreen({ navigation, route }) {
     const auth = useSelector(authSelector);
     const user = auth.user;
 
-    const [activeTab, setActiveTab] = useState("followers");
-
-    const RenderItemFollowing = ({ item }) => {
-        return (
-            <View className="mt-4 flex-row items-center justify-between p-4">
-                <View className=" flex-row justify-center items-center gap-4">
-                    <Image
-                        source={{ uri: item.avatar }}
-                        style={{ resizeMode: "cover", width: 50, height: 50, borderRadius: 100 }}
-                    />
-                    <Text className="text-lg font-bold color-gray-600">{item?.username}</Text>
-                </View>
-                <View className="flex-row items-center gap-2">
-                    <TouchableOpacity>
-                        <View className="border-1 border-gray-400 w-32 h-12 rounded-md items-center justify-center">
-                            <Text className="text-gray-400 font-bold">Following</Text>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Feather name="more-vertical" size={24} color="black" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-        );
-    };
+    const [activeTab, setActiveTab] = useState("following");
 
     const renderItemFollowers = ({ item }) => {
         return (
             <View className="mt-4 flex-row items-center justify-between p-4 border-b border-gray-200">
                 <View className=" flex-row justify-center items-center gap-4">
                     <Image
-                        source={{ uri: item.avatar }}
+                        source={{ uri: item?.avatar }}
                         style={{ resizeMode: "cover", width: 50, height: 50, borderRadius: 100 }}
                     />
                     <Text className="text-lg font-bold color-gray-600">{item?.username}</Text>
@@ -77,10 +54,7 @@ export default function FollowScreen({ navigation, route }) {
         <SafeAreaView className="flex-1 bg-white">
             <View className="flex-row justify-between p-4">
                 <View className="flex-row items-center gap-4 ">
-                    <TouchableOpacity>
-                        <Ionicons name="chevron-back" size={24} color="#333" />
-                    </TouchableOpacity>
-                    <Avatar image={user.avatar} width="w-16" height="h-16" />
+                    <Avatar image={user?.avatar} width="w-16" height="h-16" />
                     <View>
                         <Text className="font-bold text-2xl text-slate-800">{user.user_name}</Text>
                     </View>
@@ -107,7 +81,7 @@ export default function FollowScreen({ navigation, route }) {
                                 <Text
                                     className={`${activeTab === tab._id ? "text-pink-500" : "text-gray-400"} text-lg`}
                                 >
-                                    {user[tab.label].length}
+                                    {user[tab._id].length}
                                 </Text>
                                 <Text
                                     className={`${activeTab === tab._id ? "text-pink-500" : "text-gray-400"} text-lg`}
@@ -124,25 +98,43 @@ export default function FollowScreen({ navigation, route }) {
 
                 {activeTab === "following" && (
                     <View>
-                        <FlatList
-                            data={users.slice(0, 4)}
-                            renderItem={RenderItemFollowing}
-                            keyExtractor={(item) => item._id}
-                        />
+                        {user.following.length > 0 ? (
+                            user.following.map((followingUser) => (
+                                <Account
+                                    key={followingUser._id}
+                                    user={followingUser}
+                                    screen="Follow"
+                                    followingList={user.following}
+                                />
+                            ))
+                        ) : (
+                            <View className="flex-1 h-44 justify-center items-center">
+                                <Text className="font-semibold text-gray-600">NO RESULT AVAILABLE</Text>
+                            </View>
+                        )}
+
                         <View className="w-full h-16 bg-slate-50 p-4 justify-center mt-8">
                             <Text className=" font-bold text-gray-500 text-xl">Suggestions for you</Text>
                         </View>
-                        <FlatList
-                            data={users.slice(4)}
-                            renderItem={renderItemFollowers}
-                            keyExtractor={(item) => item._id}
-                        />
+                        <FlatList data={users} renderItem={renderItemFollowers} keyExtractor={(item) => item._id} />
                     </View>
                 )}
 
-                {activeTab === "followers" && (
-                    <FlatList data={users} renderItem={renderItemFollowers} keyExtractor={(item) => item._id} />
-                )}
+                {activeTab === "followers" &&
+                    (user.followers.length > 0 ? (
+                        user.followers.map((follower) => (
+                            <Account
+                                key={follower._id}
+                                user={follower}
+                                screen="Follow"
+                                followingList={user.following}
+                            />
+                        ))
+                    ) : (
+                        <View className="flex-1 h-44 justify-center items-center">
+                            <Text className="font-semibold text-gray-600">NO RESULT AVAILABLE</Text>
+                        </View>
+                    ))}
             </View>
         </SafeAreaView>
     ) : null;

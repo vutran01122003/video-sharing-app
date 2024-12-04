@@ -59,10 +59,6 @@ export const login = (loginData) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
     try {
         await AsyncStorage.removeItem("token");
-
-        dispatch({
-            type: GLOBAL_TYPES.AUTH.LOGOUT
-        });
     } catch (error) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,

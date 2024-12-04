@@ -1,7 +1,7 @@
 import { omit } from "lodash";
 import createError from "http-errors";
 import { type Request, type Response, type NextFunction } from "express";
-import { LoginInput, UserInput, usernameSchema } from "../schema/user.schema";
+import { LoginInput, UserInput, userQueryInput } from "../schema/user.schema";
 import { UserDocument } from "../models/user.model";
 import UserService from "../services/user.service";
 import AuthService from "../services/auth.service";
@@ -61,11 +61,12 @@ class UserController {
         }
     }
 
-    async getUsersByUsername(req: Request<{}, {}, {}, usernameSchema>, res: Response, next: NextFunction) {
+    async getUsers(req: Request<{}, {}, {}, userQueryInput>, res: Response, next: NextFunction) {
         try {
-            const user_name = req.query.user_name;
+            const query: userQueryInput = req.query;
+            const authUser: UserDocument = res.locals.userData;
 
-            const users: UserDocument[] = await UserService.getUsersByUserName(user_name);
+            const users: UserDocument[] = await UserService.getUsers(query, authUser);
 
             res.status(200).json({
                 message: "Get users by username successfull",

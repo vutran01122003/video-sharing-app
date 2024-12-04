@@ -7,3 +7,8 @@ export interface VerifyTokenResult {
     isExpired: boolean;
     data: TokenPayload | undefined;
 }
+
+export interface UserFilterData {
+    user_name?: Object | undefined;
+    _id?: Object | undefined;
+}

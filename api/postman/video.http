@@ -14,9 +14,11 @@ Content-Type: application/json
 
 ### Get videos by user_id 
 GET {{url}}/users/6739fc7620630489bd285dd3/videos
+x-token:
 
 ### Get videos by keyword
-GET {{url}}/videos?keyword=Koko
+GET {{url}}/videos?keyword=k
+x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzNkYTNlNGJkZmZmYWYwOGQ0ZDg5YjgiLCJpYXQiOjE3MzMzMjI4MjIsImV4cCI6MTczMzMzMDAyMn0.t-g3wuwgQYCQSE6BUvpIRVcHp34fpnyjBs_lf7muha5_DIGxdh99MXkrBZkp_e-Rn9kkkJTIDZlaMR5RtsY1MI6FvSOJeXB-P9u-G8MgS_oah9RHP8JsJvGO6q8R5JUk93YXwDAF-T9-HfNWZT1213c_ONYt8uaLGR_obwhrGxOzo6QBFlRw0yhr5iji3W8XDWwFe4Syfr2_VgLrnKVwePEUVhOFRoMabC1iuaM9a1jAoJq1CvFZha0-7afYmq7iW_hq9fPl_s78H1VVxGrNiUGOMHKhhaN_g2swxCQUHNtoKANwWQ3WCyrhHqwcpxLCH6jEwuBKUF_FHCgbpwjFhQ
 
 ### Get video by id
 GET {{url}}/videos/673c95a008500cc926a2c0ad
@@ -33,6 +35,7 @@ x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzNkYTNlNGJkZmZmYWYwOG
 
 ### Delete video by id
 DELETE {{url}}/videos/673c95a008500cc926a2c0ad
+x-token:
 
 ### Like video
 POST {{url}}/videos/673f0272b4582e1635968bdf/like
@@ -43,3 +46,7 @@ x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzNkYTNlNGJkZmZmYW
 POST {{url}}/videos/673f0272b4582e1635968bdf/unlike
 Content-Type: application/json
 x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzNkYTNlNGJkZmZmYWYwOGQ0ZDg5YjgiLCJpYXQiOjE3MzI0MzMwNDYsImV4cCI6MTczMjQ0MDI0Nn0.D5ybksDCtpgxGQm4X-Srbn9JxaK29QuqxuEbMsgbGxeSGRGIJtLXw_YcGp9ODWTB4JumpN_j0l0IWxGSWgmTB3u_fIv2yxjdvsO6Co8aFu0RQCMBND-SZFrACNzIg08HJL7pUtvRR8tYHGq7fJ9rNjg4QBWjPkpqng6Htkm-UKHhvlURs7SVq-dlorGiRqyaghjUlW3NMh1C2exkK2ZFFSsUCBwtXiowOpK-w7nLy0tcY2LVku6Sx7n9tHSM5c_1fRs2zAT0RUWKVeKdoIc2ibuDqrCq_PS81m9GGgji6Y4XGs5OqwoS8wO0JQHn0OyVuZxEa6XfQxyvPMp7Se2Buw
+
+### Increase view
+PATCH {{url}}/videos/6749c4862d00605b8bd4e866/increase-view
+x-token: eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzNkYTNlNGJkZmZmYWYwOGQ0ZDg5YjgiLCJpYXQiOjE3MzMzMjg3NzAsImV4cCI6MTczMzMzNTk3MH0.ysqqE_eF_Er8cKqxYWSqY7Vi0U1ce1VNa6qImaF-vLlNksYD3NDxwAQXQXibdHQCZ1zEC_yTAg_Xo_0plHZWhx48igfhCm-bwObb1DjdD51q8nAU-CBonuf2hfnYG6AGma-n8VvJgP-hTwJOT8fd40dtf7lHWLcgXBThvTT4pVtZCVCOUYhagbbyEtvQ-bAiwNhW_FxRA0Ok5KrJ6_HQ5e9TmkZNjHwij2oewKxNW2BurmWdgzeEoRRvYblDEp0ougID9TAY-C7xk_QqY6e5klmgAkbb0NZc9m9HmI_9lvORBro_93N9jvYUo51MGF452pSGMn5DjHYf9qy6UnVnBA

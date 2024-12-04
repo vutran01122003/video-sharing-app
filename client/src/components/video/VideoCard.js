@@ -39,7 +39,11 @@ function VideoCard({
 
                 <View className="absolute bottom-0 left-0 flex-row justify-between items-center px-2 pb-2 pt-1 bg-stone-600/80">
                     <View className="flex-1">
-                        {(isStreaming || isTrending) && <Text className="font-bold color-white text-lg">{title}</Text>}
+                        {(isStreaming || isTrending) && (
+                            <Text className="font-bold color-white text-lg ">{`${title.slice(0, 8)} ${
+                                title.length > 8 ? "..." : ""
+                            }`}</Text>
+                        )}
                         <View className="w-full flex-row items-center justify-between">
                             <View className="flex-row gap-1 items-center">
                                 <Feather name="play" size={12} color="white" />
@@ -59,7 +63,7 @@ function VideoCard({
                         </View>
                     </View>
 
-                    {(isStreaming || isTrending) && <Avatar image={user.avatar} width="w-9" height="h-9" />}
+                    {(isStreaming || isTrending) && <Avatar image={user?.avatar} width="w-9" height="h-9" />}
                 </View>
             </View>
 
@@ -74,7 +78,7 @@ function VideoCard({
                     <Avatar
                         isHorizontal={true}
                         username={user.user_name}
-                        image={user.avatar}
+                        image={user?.avatar}
                         width="w-8"
                         height="h-8"
                     />

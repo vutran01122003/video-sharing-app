@@ -61,7 +61,7 @@ const CommentModal = ({ visible, onClose, video_id }) => {
 
     const CommentItem = ({ item }) => (
         <View className="flex-row p-4 border-b border-gray-200">
-            <Avatar image={item.user.avatar} width="w-12" height="h-12" />
+            <Avatar image={item.user?.avatar} width="w-12" height="h-12" />
             <View className="flex-1 ml-3">
                 <Text className="font-medium">{item.user.user_name}</Text>
                 {isEdit && item._id === currentCommentId ? (

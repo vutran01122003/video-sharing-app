@@ -1,5 +1,6 @@
 import { Audio } from "expo-av";
 import RNFS from "react-native-fs";
+import DocumentPicker, { types } from "react-native-document-picker";
 import { Dimensions, StatusBar } from "react-native";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useIsFocused, useFocusEffect } from "@react-navigation/native";
@@ -15,11 +16,8 @@ import FilterModal from "../components/modal/FilterModal";
 import CircleProgressBar from "../components/alert/CircleProgressBar";
 import AnimatedAudioButton from "../components/custom/AnimatedAudioButton";
 import { useDispatch } from "react-redux";
-import GLOBAL_TYPES from "../redux/actions/globalTypes";
 
 export default function CreateVideoScreen({ navigation, route }) {
-    const dispatch = useDispatch();
-
     let timer = null;
     const fps = 60;
     const windowWidth = Dimensions.get("window").width;
@@ -63,6 +61,24 @@ export default function CreateVideoScreen({ navigation, route }) {
     const faceDetectionOptions = useRef({
         landmarkMode: "all"
     }).current;
+
+    const handleDocumentSelection = useCallback(async () => {
+        const response = await DocumentPicker.pick({
+            type: [types.video],
+            allowMultiSelection: false
+        });
+
+        if (response.length > 0) {
+            const { uri, name } = response[0];
+
+            const destPath = `${RNFS.TemporaryDirectoryPath}/${name}`;
+
+            await RNFS.copyFile(uri, destPath);
+
+            const thumbnail = await generateThumbnail(destPath);
+            navigation.navigate("Upload", { videoUri: destPath, thumbnail });
+        }
+    }, []);
 
     const onGoHome = () => {
         navigation.navigate("Home");
@@ -320,6 +336,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                             setFilterLayout(event.nativeEvent.layout);
                         }}
                         style={{
+                            opacity: isRecord ? 1 : 0,
                             position: "absolute",
                             top: positions[positions.length - 1]?.y - 10 || 0,
                             left: windowWidth - positions[positions.length - 1]?.x + 10 || 0
@@ -409,7 +426,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={handleDocumentSelection}>
                             <View className="gap-2 items-center">
                                 <FontAwesome name="image" size={28} color="white" />
                                 <Text className="color-white">Upload</Text>

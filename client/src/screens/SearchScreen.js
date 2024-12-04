@@ -47,8 +47,6 @@ export default function SearchScreen({ navigation, route }) {
         setKeyword("");
     };
 
-    // console.log(authUser);
-
     return (
         <SafeAreaView>
             <View className="w-full h-full bg-white p-5 pt-12">
@@ -151,14 +149,7 @@ export default function SearchScreen({ navigation, route }) {
                             {users.map((user) => {
                                 if (user._id === authUser._id) return null;
 
-                                return (
-                                    <Account
-                                        key={user._id}
-                                        user={user}
-                                        screen="Search"
-                                        followingList={authUser.following}
-                                    />
-                                );
+                                return <Account key={user._id} user={user} followingList={authUser.following} />;
                             })}
                         </ScrollView>
                     ) : (
