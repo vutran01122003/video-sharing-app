@@ -126,6 +126,19 @@ class VideoController {
         }
     }
 
+    async increaseView(req: Request<VideoIdInput>, res: Response, next: NextFunction) {
+        try {
+            const video_id: string = req.params.video_id;
+            await VideoService.increaseView(video_id);
+
+            res.status(200).json({
+                message: "Increase view for video successfully"
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async createComment(req: Request<VideoIdInput, {}, CommentInput>, res: Response, next: NextFunction) {
         try {
             const video_id: string = req.params.video_id;

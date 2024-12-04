@@ -70,6 +70,26 @@ export const getHomeVideos = () => async (dispatch) => {
     }
 };
 
+export const increaseView = (video_id) => async () => {
+    try {
+        await patchDataApi(`/videos/${video_id}/increase-view`);
+
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                success: res.data?.message || "Increase viewsuccessful"
+            }
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.message || "Increase view failed"
+            }
+        });
+    }
+};
+
 export const getVideosByUserId =
     ({ userId, isAuthUser }) =>
     async (dispatch) => {
