@@ -2,13 +2,13 @@ import express, { type Router } from "express";
 import videoControllers from "../../controllers/video.controllers";
 import { validateResource } from "../../middleware/validateResource";
 import { videoIdSchema } from "../../schema";
-import { updatedVideoSchema, uploadedVideoSchema } from "../../schema/video.schema";
+import { keywordVideoSchema, updatedVideoSchema, uploadedVideoSchema } from "../../schema/video.schema";
 import { commentIdListSchema, commentSchema, updatedCommentSchema } from "../../schema/comment.schema";
 import { verifyToken } from "../../middleware/auth";
 
 const router: Router = express.Router();
 
-router.post("/videos", validateResource(uploadedVideoSchema), videoControllers.uploadVideo);
+router.post("/videos", verifyToken, validateResource(uploadedVideoSchema), videoControllers.uploadVideo);
 router.post("/videos/:video_id/like", verifyToken, validateResource(videoIdSchema), videoControllers.likeVideo);
 router.post("/videos/:video_id/unlike", verifyToken, validateResource(videoIdSchema), videoControllers.unlikeVideo);
 router.post(
@@ -18,7 +18,8 @@ router.post(
     videoControllers.createComment
 );
 
-router.get("/videos/:video_id", validateResource(videoIdSchema), videoControllers.getVideoById);
+router.get("/videos", validateResource(keywordVideoSchema), videoControllers.getAllVideoByKeyword);
+router.get("/videos/:video_id", verifyToken, validateResource(videoIdSchema), videoControllers.getVideoById);
 router.get(
     "/videos/:video_id/comments",
     validateResource(videoIdSchema),

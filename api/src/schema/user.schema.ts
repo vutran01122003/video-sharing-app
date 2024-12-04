@@ -46,6 +46,14 @@ export const loginSchema = z.object({
     })
 });
 
+export const usernameSchema = z.object({
+    query: z.object({
+        user_name: z.string().max(500, "user_name shoudle be max 500 characters")
+    })
+});
+
 export type LoginInput = TypeOf<typeof loginSchema>["body"];
 
 export type UserInput = Omit<TypeOf<typeof userSchema>["body"], "confirm">;
+
+export type usernameSchema = TypeOf<typeof usernameSchema>["query"];

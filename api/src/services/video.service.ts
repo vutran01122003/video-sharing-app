@@ -52,6 +52,29 @@ class VideoService {
         }
     }
 
+    static async findAllVideoByKeyword(keyword: string): Promise<VideoDocument[]> {
+        try {
+            const videos = await Video.find({
+                title: { $regex: keyword, $options: "i" }
+            }).populate([
+                {
+                    path: "user",
+                    model: "user",
+                    select: "avatar user_name"
+                },
+                {
+                    path: "audioData",
+                    populate: {
+                        path: "audio"
+                    }
+                }
+            ]);
+            return videos;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     static async findVideoById(video_id: string): Promise<VideoDocument> {
         try {
             const video: VideoDocument | null = await Video.findById(video_id);

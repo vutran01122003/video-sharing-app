@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { UpdateVideoInput, UploadVideoInput } from "../schema/video.schema";
+import { keywordVideoSchema, UpdateVideoInput, UploadVideoInput } from "../schema/video.schema";
 import VideoService from "../services/video.service";
 import { VideoDocument } from "../models/video.model";
 import { UserIdInput, VideoIdInput } from "../schema";
@@ -28,6 +28,20 @@ class VideoController {
 
             res.status(200).json({
                 message: "Get videos by user id successfully",
+                data: videos
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getAllVideoByKeyword(req: Request<{}, {}, {}, keywordVideoSchema>, res: Response, next: NextFunction) {
+        try {
+            const keyword: string = req.query.keyword;
+            const videos: VideoDocument[] = await VideoService.findAllVideoByKeyword(keyword);
+
+            res.status(200).json({
+                message: "Get videos by keyword successfully",
                 data: videos
             });
         } catch (error) {

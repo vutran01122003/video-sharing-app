@@ -7,6 +7,7 @@ import WatchVideoScreen from "../screens/WatchVideoScreen";
 import FollowScreen from "../screens/FollowScreen";
 import LoginScreen from "../screens/LoginScreen";
 import SignUp from "../screens/SignUpScreen";
+import OtherProfileScreen from "../screens/OtherProfileScreen";
 
 export const privateTabs = {
     Login: {
@@ -28,6 +29,11 @@ export const privateTabs = {
         name: "VideoAudio",
         icon: "video",
         component: WatchVideoScreen
+    },
+    OtherProfile: {
+        name: "OtherProfile",
+        icon: "user",
+        component: OtherProfileScreen
     }
 };
 
@@ -48,7 +54,7 @@ export const tabs = [
         component: CreateVideoScreen
     },
     {
-        name: "Friends",
+        name: "Follow",
         icon: "users",
         component: FollowScreen
     },

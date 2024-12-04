@@ -304,11 +304,13 @@ export const filterData = [
     {
         _id: "01",
         name: "Pig nose",
+        type: "NOSE",
         image: "https://res.cloudinary.com/dzm0nupxy/image/upload/v1731921259/video_sharing_app/filters/nbzpibvxwzpvuekenvyr.png"
     },
     {
         _id: "02",
         name: "Pirate",
+        type: "FACE",
         image: "https://res.cloudinary.com/dzm0nupxy/image/upload/v1732773283/video_sharing_app/filters/dhrtm1ynpt3eh4bdtwto.png"
     }
 ];
@@ -316,9 +318,12 @@ export const filterData = [
 // Search
 export const suggestionData = ["Funny momments of pet", "Cats", "Dogs", "Foods for pet", "Vet center"];
 
+export const categorySearch = ["Trending", "Accounts", "Streaming", "Audio"];
+
 // Videos
 export const videoTypes = {
     MY_VIDEOS: "myVideos",
     HOME_VIDEOS: "homeVideos",
-    OTHER_VIDEOS: "otherVideos"
+    OTHER_VIDEOS: "otherVideos",
+    SEARCHING_VIDEOS: "searchingVideos"
 };

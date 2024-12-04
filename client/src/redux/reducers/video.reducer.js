@@ -4,7 +4,8 @@ import GLOBAL_TYPES from "../actions/globalTypes";
 const initalState = {
     myVideos: [],
     homeVideos: [],
-    otherVideos: []
+    otherVideos: [],
+    searchingVideos: []
 };
 
 const videoReducer = (state = initalState, action) => {
@@ -27,6 +28,13 @@ const videoReducer = (state = initalState, action) => {
             return {
                 ...state,
                 otherVideos: [...action.payload.videos]
+            };
+        }
+
+        case GLOBAL_TYPES.VIDEO.GET_SEARCHING_VIDEOS: {
+            return {
+                ...state,
+                searchingVideos: [...action.payload.videos]
             };
         }
 

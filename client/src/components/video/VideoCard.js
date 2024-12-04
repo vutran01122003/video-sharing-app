@@ -52,7 +52,7 @@ function VideoCard({
                                 <View className="flex-row gap-1 items-center">
                                     <Feather name="heart" size={12} color="white" />
                                     <Text className={`color-white text-sm`}>
-                                        {`${millify(likes)} ${!isSearching ? "Likes" : ""}`}
+                                        {`${millify(likes.length)} ${!isSearching ? "Likes" : ""}`}
                                     </Text>
                                 </View>
                             )}
@@ -71,7 +71,13 @@ function VideoCard({
                         </Text>
                     </View>
 
-                    <Avatar isHorizontal={true} username={user.username} image={user.avatar} width="w-8" height="h-8" />
+                    <Avatar
+                        isHorizontal={true}
+                        username={user.user_name}
+                        image={user.avatar}
+                        width="w-8"
+                        height="h-8"
+                    />
                 </View>
             )}
         </View>

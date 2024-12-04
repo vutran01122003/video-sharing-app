@@ -1,23 +1,20 @@
 import React, { useState } from "react";
 import { Text, View, SafeAreaView, Image, TouchableOpacity, ScrollView } from "react-native";
-import { useSelector } from "react-redux";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
+import { useDispatch } from "react-redux";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import VideoCard from "../video/VideoCard";
-import { authSelector, videoSelector } from "../../redux/selector";
 import { videoTypes } from "../../shared";
+import { logout } from "../../redux/actions/auth.action";
 
-export default function Profile() {
-    const auth = useSelector(authSelector);
-    const user = auth.user;
-
-    const video = useSelector(videoSelector);
-    const myVideos = video.myVideos;
+export default function Profile({ user, videos, isAuthUser, screen }) {
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const [activeTab, setActiveTab] = useState("videos");
-    const navigation = useNavigation();
+
     const tabs = [
         {
             id: "videos",
@@ -36,39 +33,48 @@ export default function Profile() {
         }
     ];
 
+    const onLogout = async () => {
+        await dispatch(logout);
+        navigation.navigate("Login");
+    };
+
     return user ? (
         <SafeAreaView className="h-full bg-white">
             <View className="container h-full w-full p-2 bg-white">
-                <View className="flex-row justify-between items-center">
-                    <View className="flex-row items-center gap-4">
-                        <TouchableOpacity>
-                            <Feather name="menu" size={30} color="#333" />
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <Feather name="user-plus" size={24} color="#333" />
-                        </TouchableOpacity>
-                    </View>
+                {isAuthUser && (
+                    <View className="flex-row justify-between items-center px-2">
+                        <View className="flex-row items-center gap-6">
+                            <TouchableOpacity>
+                                <AntDesign name="edit" size={24} color="#333" />
+                            </TouchableOpacity>
 
-                    <View className="flex-row gap-1 items-center">
-                        <AntDesign name="edit" size={14} color="#F44B87" />
-                        <Text className="color-main font-semibold">Edit Profile</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate("Follow")}>
+                                <Feather name="user-plus" size={24} color="#333" />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View className="flex-row gap-1 items-center">
+                            <TouchableOpacity onPress={onLogout}>
+                                <MaterialIcons name="logout" size={26} color="#D22B2B" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                )}
 
                 <View className="items-center gap-4">
                     <Image source={{ uri: user.avatar }} className="w-28 h-28 rounded-full" />
                     <Text className="text-center font-bold text-3xl">{user.user_name}</Text>
                     <View className="flex-row gap-12">
                         <View>
-                            <Text className="text-center">203</Text>
+                            <Text className="text-center">{user.following.length}</Text>
                             <Text className="text-gray-400">Follwing</Text>
                         </View>
                         <View>
-                            <Text className="text-center">628</Text>
+                            <Text className="text-center">{user.followers.length}</Text>
                             <Text className="text-gray-400">Followers</Text>
                         </View>
                         <View className="items-center">
-                            <Text className="text-center">2634</Text>
+                            <Text className="text-center">134</Text>
                             <Text className="text-gray-400">Like</Text>
                         </View>
                     </View>
@@ -98,9 +104,8 @@ export default function Profile() {
 
                 <ScrollView>
                     <View className="w-full flex-wrap flex-row gap-4 justify-center">
-                        {activeTab === "videos" &&
-                            myVideos.length > 0 &&
-                            myVideos.map((video, index) => (
+                        {activeTab === "videos" && videos.length > 0 ? (
+                            videos.map((video, index) => (
                                 <View className="w-5/12" key={video._id}>
                                     <TouchableOpacity
                                         onPress={() =>
@@ -108,7 +113,7 @@ export default function Profile() {
                                                 user,
                                                 videoType: videoTypes.MY_VIDEOS,
                                                 indexVideo: index,
-                                                screen: "Profile"
+                                                screen
                                             })
                                         }
                                     >
@@ -120,7 +125,12 @@ export default function Profile() {
                                         />
                                     </TouchableOpacity>
                                 </View>
-                            ))}
+                            ))
+                        ) : (
+                            <View className="flex-1 h-44 justify-center items-center">
+                                <Text className="font-semibold text-gray-600">NO RESULT AVAILABLE</Text>
+                            </View>
+                        )}
                     </View>
                 </ScrollView>
             </View>

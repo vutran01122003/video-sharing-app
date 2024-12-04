@@ -15,6 +15,9 @@ Content-Type: application/json
 ### Get videos by user_id 
 GET {{url}}/users/6739fc7620630489bd285dd3/videos
 
+### Get videos by keyword
+GET {{url}}/videos?keyword=Koko
+
 ### Get video by id
 GET {{url}}/videos/673c95a008500cc926a2c0ad
 

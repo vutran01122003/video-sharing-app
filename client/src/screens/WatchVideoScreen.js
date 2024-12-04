@@ -1,8 +1,18 @@
 import { Audio, Video } from "expo-av";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
-import React, { useState, useRef, useEffect } from "react";
-import { useIsFocused } from "@react-navigation/native";
-import { View, TouchableOpacity, SafeAreaView, Dimensions, ScrollView, BackHandler, Text, Image } from "react-native";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import {
+    View,
+    TouchableOpacity,
+    SafeAreaView,
+    Dimensions,
+    ScrollView,
+    BackHandler,
+    Text,
+    Image,
+    StatusBar
+} from "react-native";
 import CommentModal from "../components/modal/CommentModal";
 import { useDispatch, useSelector } from "react-redux";
 import { videoSelector } from "../redux/selector";
@@ -178,6 +188,16 @@ export default function WatchingScreen({ navigation, route }) {
         }
     }, [sound, isPlaying, isLoading, timer]);
 
+    useFocusEffect(
+        useCallback(() => {
+            StatusBar.setHidden(true);
+
+            return () => {
+                StatusBar.setHidden(false);
+            };
+        }, [])
+    );
+
     return video[videoType] ? (
         <SafeAreaView className="h-full w-full relative">
             <TouchableOpacity onPress={() => navigation.navigate(screen)}>
@@ -253,7 +273,9 @@ export default function WatchingScreen({ navigation, route }) {
                                             </View>
 
                                             <TouchableOpacity onPress={() => setModalVisible(true)}>
-                                                <MaterialIcons name="chat" size={35} color="white" />
+                                                {video.is_comment_allowed && (
+                                                    <MaterialIcons name="chat" size={35} color="white" />
+                                                )}
                                             </TouchableOpacity>
 
                                             <TouchableOpacity className="my-2.5 p-2.5 bg-black/50 rounded-full">

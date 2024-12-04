@@ -40,5 +40,14 @@ export const updatedVideoSchema = z.object({
     })
 });
 
+export const keywordVideoSchema = z.object({
+    query: z.object({
+        keyword: z.string().max(500, "Title shoudle be max 500 characters")
+    })
+});
+
 export type UpdateVideoInput = TypeOf<typeof updatedVideoSchema>["body"];
+
 export type UploadVideoInput = TypeOf<typeof uploadedVideoSchema>["body"];
+
+export type keywordVideoSchema = TypeOf<typeof keywordVideoSchema>["query"];

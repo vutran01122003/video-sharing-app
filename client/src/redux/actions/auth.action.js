@@ -16,7 +16,6 @@ export const register =
             });
             navigation.navigate("Login");
         } catch (error) {
-            console.dir(error);
             dispatch({
                 type: GLOBAL_TYPES.ALERT,
                 payload: {
@@ -52,6 +51,23 @@ export const login = (loginData) => async (dispatch) => {
             type: GLOBAL_TYPES.ALERT,
             payload: {
                 error: error.response?.data?.msg || "Login failed"
+            }
+        });
+    }
+};
+
+export const logout = () => async (dispatch) => {
+    try {
+        await AsyncStorage.removeItem("token");
+
+        dispatch({
+            type: GLOBAL_TYPES.AUTH.LOGOUT
+        });
+    } catch (error) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {
+                error: error.response?.data?.msg || "Logout failed"
             }
         });
     }

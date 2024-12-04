@@ -20,8 +20,6 @@ export const uploadVideo =
                 thumbnail: uploadData[1].secure_url
             });
 
-            console.log(res.data.data);
-
             dispatch({
                 type: GLOBAL_TYPES.VIDEO.UPLOAD_VIDEO,
                 payload: {
@@ -45,12 +43,41 @@ export const uploadVideo =
         }
     };
 
-export const getVideoByUserId = (userId) => async (dispatch) => {
+export const getVideosByUserId =
+    ({ userId, isAuthUser }) =>
+    async (dispatch) => {
+        try {
+            const res = await getDataApi(`/users/${userId}/videos`);
+
+            dispatch({
+                type: GLOBAL_TYPES.VIDEO[isAuthUser ? "GET_MY_VIDEOS" : "GET_OTHER_VIDEOS"],
+                payload: {
+                    videos: res.data.data
+                }
+            });
+
+            dispatch({
+                type: GLOBAL_TYPES.ALERT,
+                payload: {
+                    success: res.data?.message || "Get videos successful"
+                }
+            });
+        } catch (error) {
+            dispatch({
+                type: GLOBAL_TYPES.ALERT,
+                payload: {
+                    error: error.response?.data?.message || "Get videos failed"
+                }
+            });
+        }
+    };
+
+export const getVideosByKeyword = (keyword) => async (dispatch) => {
     try {
-        const res = await getDataApi(`users/${userId}/videos`);
+        const res = await getDataApi(`/videos?keyword=${keyword}`);
 
         dispatch({
-            type: GLOBAL_TYPES.VIDEO.GET_MY_VIDEOS,
+            type: GLOBAL_TYPES.VIDEO.GET_SEARCHING_VIDEOS,
             payload: {
                 videos: res.data.data
             }

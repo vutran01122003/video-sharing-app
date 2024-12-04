@@ -7,8 +7,7 @@ import { tabs } from "../../src/shared/tabs";
 import { authSelector } from "../redux/selector";
 import { verifyToken } from "../redux/actions/auth.action";
 import { screenOptions } from "../../src/shared/screen";
-import { getVideoByUserId } from "../redux/actions/video.action";
-import { Text, View } from "react-native";
+import { getVideosByUserId } from "../redux/actions/video.action";
 import Loading from "../components/alert/Loading";
 
 const Tab = createBottomTabNavigator();
@@ -31,7 +30,13 @@ export default function TabNavigator() {
     }, [isFocus, dispatch]);
 
     useEffect(() => {
-        if (user) dispatch(getVideoByUserId(user._id));
+        if (user)
+            dispatch(
+                getVideosByUserId({
+                    userId: user._id,
+                    isAuthUser: true
+                })
+            );
     }, [dispatch, user]);
 
     if (isLoading) return <Loading />;

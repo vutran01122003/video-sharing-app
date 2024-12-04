@@ -30,6 +30,13 @@ const authReducer = (state = initialState, action) => {
             };
         }
 
+        case GLOBAL_TYPES.USER.UPDATE_USER: {
+            return {
+                ...state,
+                user: action.payload.user
+            };
+        }
+
         default:
             return state;
     }

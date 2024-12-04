@@ -1,8 +1,8 @@
 import { Audio } from "expo-av";
 import RNFS from "react-native-fs";
-import { Dimensions } from "react-native";
-import { useEffect, useRef, useState } from "react";
-import { useIsFocused } from "@react-navigation/native";
+import { Dimensions, StatusBar } from "react-native";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useIsFocused, useFocusEffect } from "@react-navigation/native";
 import { TouchableOpacity, SafeAreaView, Text, View, Image } from "react-native";
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Camera as CameraFaceDetector } from "react-native-vision-camera-face-detector";
@@ -14,8 +14,12 @@ import AudioModal from "../components/modal/AudioModal";
 import FilterModal from "../components/modal/FilterModal";
 import CircleProgressBar from "../components/alert/CircleProgressBar";
 import AnimatedAudioButton from "../components/custom/AnimatedAudioButton";
+import { useDispatch } from "react-redux";
+import GLOBAL_TYPES from "../redux/actions/globalTypes";
 
 export default function CreateVideoScreen({ navigation, route }) {
+    const dispatch = useDispatch();
+
     let timer = null;
     const fps = 60;
     const windowWidth = Dimensions.get("window").width;
@@ -141,10 +145,10 @@ export default function CreateVideoScreen({ navigation, route }) {
     };
 
     const resetFilterData = () => {
-        if (positions.length > 0) setPositions([]);
-        if (selectedFilter) setSelectedFilter(null);
         if (videoPath) setVideoPath("");
         if (filterPath) setFilterPath("");
+        if (positions.length > 0) setPositions([]);
+        if (selectedFilter) setSelectedFilter(null);
     };
 
     function handleFacesDetection(faces) {
@@ -153,11 +157,11 @@ export default function CreateVideoScreen({ navigation, route }) {
 
             const timestamp = (Date.now() - startTime) / 1000;
 
-            switch (selectedFilter.name.toLowerCase()) {
-                case "pirate": {
-                    const { x, y, height, width } = faces[0].bounds;
+            switch (selectedFilter.type) {
+                case "FACE": {
+                    let { x, y, height, width } = faces[0].bounds;
 
-                    position.x = windowWidth - x - width / 2 - width / 4;
+                    position.x = windowWidth - x - width / 2 - width / 3;
                     position.y = y - height / 6;
                     position.width = width * 1.3;
                     position.height = height * 1.3;
@@ -165,7 +169,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                     break;
                 }
 
-                case "pig nose": {
+                case "NOSE": {
                     const { x, y } = faces[0].landmarks.NOSE_BASE;
                     const { width, height } = filterLayout;
 
@@ -184,6 +188,18 @@ export default function CreateVideoScreen({ navigation, route }) {
             if (isRecord) setPositions((prev) => [...prev, { ...position, timestamp }]);
         }
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            StatusBar.setBackgroundColor("black");
+            StatusBar.setBarStyle("light-content");
+
+            return () => {
+                StatusBar.setBackgroundColor("white");
+                StatusBar.setBarStyle("dark-content");
+            };
+        }, [])
+    );
 
     useEffect(() => {
         let audioData = null;
@@ -210,9 +226,13 @@ export default function CreateVideoScreen({ navigation, route }) {
                         positions: positions
                     })
                         .then(async (outputVideo) => {
-                            resetFilterData();
                             const thumbnail = await generateThumbnail(outputVideo);
-                            navigation.navigate("Upload", { videoUri: outputVideo, thumbnail, audioData });
+                            navigation.navigate("Upload", {
+                                videoUri: outputVideo,
+                                thumbnail,
+                                audioData
+                            });
+                            resetFilterData();
                         })
                         .catch((error) => {
                             throw error;
@@ -271,7 +291,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                     style={{ position: "absolute", top: 0, left: 0, height: "100%", width: "100%" }}
                 />
 
-                {selectedFilter?.name.toLowerCase() === "pirate" && (
+                {selectedFilter?.type === "FACE" && (
                     <View
                         onLayout={(event) => {
                             setFilterLayout(event.nativeEvent.layout);
@@ -279,7 +299,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                         style={{
                             position: "absolute",
                             top: top - 10,
-                            left: windowWidth - left - width * 0.9
+                            left: windowWidth - left - width * 0.95
                         }}
                     >
                         <Image
@@ -294,7 +314,7 @@ export default function CreateVideoScreen({ navigation, route }) {
                     </View>
                 )}
 
-                {selectedFilter?.name.toLowerCase() === "pig nose" && (
+                {selectedFilter?.type === "NOSE" && (
                     <View
                         onLayout={(event) => {
                             setFilterLayout(event.nativeEvent.layout);
