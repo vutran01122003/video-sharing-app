@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { keywordVideoSchema, UpdateVideoInput, UploadVideoInput } from "../schema/video.schema";
+import { UpdateVideoInput, UploadVideoInput, videoQueryInput } from "../schema/video.schema";
 import VideoService from "../services/video.service";
 import { VideoDocument } from "../models/video.model";
 import { UserIdInput, VideoIdInput } from "../schema";
@@ -35,7 +35,7 @@ class VideoController {
         }
     }
 
-    async getVideos(req: Request<{}, {}, {}, keywordVideoSchema>, res: Response, next: NextFunction) {
+    async getVideos(req: Request<{}, {}, {}, videoQueryInput>, res: Response, next: NextFunction) {
         try {
             const keyword = req.query.keyword as string;
             const videos: VideoDocument[] = await VideoService.findAllVideo(keyword);
@@ -120,6 +120,19 @@ class VideoController {
             res.status(200).json({
                 message: "Unlike video successful",
                 data: updatedVideo
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async increaseView(req: Request<VideoIdInput>, res: Response, next: NextFunction) {
+        try {
+            const video_id: string = req.params.video_id;
+            await VideoService.increaseView(video_id);
+
+            res.status(200).json({
+                message: "Increase view for video successfully"
             });
         } catch (error) {
             next(error);

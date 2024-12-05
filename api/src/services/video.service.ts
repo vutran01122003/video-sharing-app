@@ -190,6 +190,16 @@ class VideoService {
         }
     }
 
+    static async increaseView(video_id: string) {
+        try {
+            await Video.findByIdAndUpdate(video_id, {
+                $inc: { views: 1 }
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+
     static async createComment(video_id: string, commentData: CommentInput): Promise<CommentDocument> {
         try {
             const [video, user] = await Promise.all([Video.findById(video_id), User.findById(commentData.user)]);

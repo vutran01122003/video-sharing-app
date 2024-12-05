@@ -40,9 +40,10 @@ export const updatedVideoSchema = z.object({
     })
 });
 
-export const keywordVideoSchema = z.object({
+export const videoQuerySchema = z.object({
     query: z.object({
-        keyword: z.string().max(500, "Title shoudle be max 500 characters").optional()
+        keyword: z.string().max(500, "Title shoudle be max 500 characters").optional(),
+        isTrending: z.boolean().optional()
     })
 });
 
@@ -50,4 +51,4 @@ export type UpdateVideoInput = TypeOf<typeof updatedVideoSchema>["body"];
 
 export type UploadVideoInput = TypeOf<typeof uploadedVideoSchema>["body"];
 
-export type keywordVideoSchema = TypeOf<typeof keywordVideoSchema>["query"];
+export type videoQueryInput = TypeOf<typeof videoQuerySchema>["query"];

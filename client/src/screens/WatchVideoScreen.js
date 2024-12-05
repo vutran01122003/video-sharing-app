@@ -16,7 +16,7 @@ import {
 import CommentModal from "../components/modal/CommentModal";
 import { useDispatch, useSelector } from "react-redux";
 import { videoSelector } from "../redux/selector";
-import { likeVideo, unlikeVideo } from "../redux/actions/video.action";
+import { increaseView, likeVideo, unlikeVideo } from "../redux/actions/video.action";
 import millify from "millify";
 import Avatar from "../components/user/Avatar";
 import moment from "moment";
@@ -120,6 +120,25 @@ export default function WatchingScreen({ navigation, route }) {
             console.log(error);
         }
     }, [currentIndex, isFocus]);
+
+    // Increase view
+    useEffect(() => {
+        let timer = null;
+        const videoElem = videoRef?.current;
+
+        if (videoElem && !isLoading) {
+            videoElem.getStatusAsync().then(({ durationMillis }) => {
+                const requiredTime = durationMillis * 0.3;
+                timer = setTimeout(() => {
+                    dispatch(increaseView(video[videoType][currentIndex]._id));
+                }, requiredTime);
+            });
+        }
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [videoRef?.current, isLoading]);
 
     // Move scroll to selected video.
     useEffect(() => {
